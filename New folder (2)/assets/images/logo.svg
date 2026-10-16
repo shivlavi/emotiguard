@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="50%" stop-color="#A78BFA" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Outer Shield Path -->
+  <path d="M50 8 L85 24 V50 C85 71 70 87 50 94 C30 87 15 71 15 50 V24 Z" 
+        stroke="url(#shieldGrad)" stroke-width="3.5" fill="#0B132B" fill-opacity="0.85" filter="url(#glow)"/>
+  
+  <!-- Inner Circuit Grid Accent -->
+  <circle cx="50" cy="50" r="32" stroke="#1E293B" stroke-dasharray="2 3" stroke-width="1.5" />
+  
+  <!-- Biometric Pulse Waveform -->
+  <path d="M22 52 H36 L41 42 L47 64 L54 34 L60 58 L65 49 L69 52 H78" 
+        stroke="url(#pulseGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" />
+  
+  <!-- Glowing node points -->
+  <circle cx="54" cy="34" r="3" fill="#22D3EE" />
+  <circle cx="47" cy="64" r="2.5" fill="#A855F7" />
+</svg>

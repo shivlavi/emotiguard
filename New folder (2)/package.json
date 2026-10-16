@@ -1,0 +1,6 @@
+{
+  "name": "emotiguard",
+  "version": "1.0.0",
+  "description": "EmotiGuard - ESP32 Wearable Physiological Monitoring Dashboard",
+  "private": true
+}
