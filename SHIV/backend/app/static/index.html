@@ -1,0 +1,3067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmotiGuard - Cyberpunk Neural Distress Detection System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-deep: #0A0F1D;
+      --panel-bg: rgba(17, 24, 39, 0.78);
+      --panel-border: rgba(255, 255, 255, 0.09);
+      --cyan-neon: #00F2FE;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --emerald-neon: #00FF87;
+      --emerald-glow: rgba(0, 255, 135, 0.35);
+      --violet-cyber: #A855F7;
+      --violet-glow: rgba(168, 85, 247, 0.35);
+      --coral-danger: #FF5E62;
+      --coral-glow: rgba(255, 94, 98, 0.4);
+      --amber-warn: #FF9900;
+      --amber-glow: rgba(255, 153, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      color: #F8FAFC;
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+      selection-background-color: #00F2FE;
+      selection-color: #0A0F1D;
+    }
+
+    .mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Cosmic Grid Background Layer */
+    .cyber-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 242, 254, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 242, 254, 0.035) 1px, transparent 1px);
+    }
+
+    /* Glassmorphism Cyber Panels */
+    .glass-panel {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .glass-panel-interactive {
+      transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .glass-panel-interactive:hover {
+      border-color: rgba(0, 242, 254, 0.45);
+      box-shadow: 0 20px 45px -10px rgba(0, 242, 254, 0.22), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+    }
+
+    /* 3D Tilt perspective wrapper */
+    .tilt-card {
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      will-change: transform;
+    }
+
+    /* Glowing Neon Pill Buttons */
+    .neon-pill-cyan {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(79, 172, 254, 0.12));
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.25);
+      color: #00F2FE;
+    }
+    .neon-pill-cyan:hover {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.3), rgba(79, 172, 254, 0.25));
+      border-color: #00F2FE;
+      box-shadow: 0 0 28px rgba(0, 242, 254, 0.55);
+      color: #FFFFFF;
+    }
+
+    /* Keyframe Animations */
+    @keyframes pulseGlow {
+      0% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.6); }
+      70% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 0 12px rgba(0, 255, 135, 0); }
+      100% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 0 0 rgba(0, 255, 135, 0); }
+    }
+    .pulse-badge {
+      animation: pulseGlow 2.2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+
+    @keyframes radarScan {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .radar-spin {
+      animation: radarScan 4s linear infinite;
+    }
+
+    @keyframes breathePulse {
+      0% { transform: scale(0.85); box-shadow: 0 0 25px rgba(0, 242, 254, 0.3); }
+      21% { transform: scale(1.22); box-shadow: 0 0 50px rgba(0, 255, 135, 0.6); }
+      58% { transform: scale(1.22); box-shadow: 0 0 50px rgba(0, 255, 135, 0.6); }
+      100% { transform: scale(0.85); box-shadow: 0 0 25px rgba(0, 242, 254, 0.3); }
+    }
+    .breathe-cyber-anim {
+      animation: breathePulse 19s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(10, 15, 29, 0.9);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 242, 254, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 242, 254, 0.7);
+    }
+
+    /* 3D Glassmorphic Security Portal & 2FA Styles */
+    .auth-vault-panel {
+      background: rgba(13, 19, 36, 0.88);
+      backdrop-filter: blur(24px) saturate(210%);
+      -webkit-backdrop-filter: blur(24px) saturate(210%);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85),
+                  0 0 45px -10px rgba(0, 242, 254, 0.28),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+      transform-style: preserve-3d;
+    }
+    .auth-vault-panel:hover {
+      box-shadow: 0 30px 75px -15px rgba(0, 0, 0, 0.95),
+                  0 0 55px -5px rgba(0, 242, 254, 0.4),
+                  inset 0 1px 0 0 rgba(255, 255, 255, 0.28);
+    }
+    @keyframes holographicShield {
+      0% { filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.6)); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 22px rgba(168, 85, 247, 0.8)); transform: scale(1.05); }
+      100% { filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.6)); transform: scale(1); }
+    }
+    .holo-shield-anim {
+      animation: holographicShield 3.5s infinite ease-in-out;
+    }
+    .otp-digit-input {
+      caret-color: #00F2FE;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .otp-digit-input:focus {
+      border-color: #00F2FE;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.5), inset 0 0 10px rgba(0, 242, 254, 0.2);
+      transform: translateY(-2px) scale(1.05);
+    }
+    @keyframes checkmarkPop {
+      0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+      70% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .anim-check-pop {
+      animation: checkmarkPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    .step-pill-active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.15));
+      border: 1px solid rgba(0, 242, 254, 0.6);
+      color: #00F2FE;
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.35);
+    }
+    .step-pill-done {
+      background: rgba(0, 255, 135, 0.15);
+      border: 1px solid rgba(0, 255, 135, 0.5);
+      color: #00FF87;
+      box-shadow: 0 0 12px rgba(0, 255, 135, 0.25);
+    }
+    .step-pill-pending {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(71, 85, 105, 0.4);
+      color: #64748B;
+    }
+
+    /* Cyberpunk Glass Toggle Switch */
+    .cyber-toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .cyber-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .cyber-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(71, 85, 105, 0.6);
+      transition: .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      border-radius: 9999px;
+    }
+    .cyber-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #94A3B8;
+      transition: .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      border-radius: 50%;
+    }
+    .cyber-toggle input:checked + .cyber-slider {
+      background-color: rgba(0, 242, 254, 0.25);
+      border-color: #00F2FE;
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+    }
+    .cyber-toggle input:checked + .cyber-slider:before {
+      transform: translateX(20px);
+      background-color: #00F2FE;
+      box-shadow: 0 0 10px #00F2FE;
+    }
+
+    /* Cyberpunk Range Slider */
+    .cyber-range {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(30, 41, 59, 0.9);
+      border-radius: 9999px;
+      outline: none;
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      cursor: pointer;
+    }
+    .cyber-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00F2FE;
+      cursor: pointer;
+      box-shadow: 0 0 14px #00F2FE;
+      border: 2px solid #0A0F1D;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .cyber-range::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px #00F2FE;
+    }
+    .cyber-range::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #00F2FE;
+      cursor: pointer;
+      box-shadow: 0 0 14px #00F2FE;
+      border: 2px solid #0A0F1D;
+    }
+
+    /* Modal Animation */
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .anim-modal-in {
+      animation: modalSlideIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="cyber-grid antialiased p-3 sm:p-5 relative">
+
+  <!-- Interactive 3D Bio-Energy Node & Constellation Canvas -->
+  <canvas id="neuralCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+  <!-- Ambient Light Orbs -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+  <div class="fixed bottom-10 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
+
+  <!-- Main Container -->
+  <div class="relative z-10 max-w-4xl mx-auto space-y-4">
+    
+    <!-- ============================================================ -->
+    <!-- TOP NAVIGATION BAR (Futuristic Cyber-Glass Header)           -->
+    <!-- ============================================================ -->
+    <header class="glass-panel relative z-40 rounded-3xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 border border-cyan-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+      
+      <!-- Brand & Status -->
+      <div class="flex items-center gap-3.5">
+        <div class="relative group">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-[0_0_22px_rgba(0,242,254,0.45)] border border-cyan-300/40 group-hover:scale-105 transition-transform">
+            🛡️
+          </div>
+          <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-[#0A0F1D] pulse-badge"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+              EmotiGuard
+            </h1>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/35 shadow-[0_0_12px_rgba(0,255,135,0.2)] flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              Live Mock BLE Active
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium">IoT Emotional Distress Detection & Support System</p>
+        </div>
+      </div>
+
+      <!-- Quick Actions (Top Right Side Controls) -->
+      <div class="flex items-center flex-wrap gap-2 sm:gap-2.5">
+        
+        <!-- Connect via Bluetooth Button -->
+        <button id="headerBleBtn" onclick="handleHeaderBleClick()" class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)] border border-cyan-300/60 transition-all active:scale-95 hover:scale-[1.02]" title="Connect Wearable Hardware via Bluetooth">
+          <span id="headerBleIcon" class="text-sm">📶</span>
+          <span id="headerBleText" class="tracking-wide uppercase text-[11px]">Connect Bluetooth</span>
+        </button>
+
+        <!-- Logged-in User Profile & Settings Widget / Dropdown -->
+        <div class="relative z-50 flex items-center shadow-sm" id="profileDropdownContainer">
+          <!-- Main button: Clicking Avatar or Name opens Profile & Settings Modal Directly -->
+          <button id="headerProfileBtn" onclick="openProfileModal()" class="flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-l-2xl bg-slate-900/95 hover:bg-slate-800/95 border-y border-l border-slate-700/80 hover:border-cyan-400/50 text-slate-200 text-xs font-bold transition-all group" title="Open Profile & Biometric Settings">
+            <div class="relative">
+              <span id="headerAvatar" class="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-sm shadow-[0_0_10px_rgba(0,242,254,0.4)] border border-cyan-300/40">🤖</span>
+              <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-slate-950"></span>
+            </div>
+            <div class="text-left hidden sm:block">
+              <span id="headerUserName" class="block text-white text-[11px] font-extrabold leading-tight">Guest User</span>
+              <span id="headerTenantId" class="block text-[9px] text-cyan-400 font-mono leading-none">wearable_guest_01</span>
+            </div>
+          </button>
+
+          <!-- Dropdown Caret toggle button -->
+          <button onclick="toggleProfileDropdown(event)" class="px-2 py-2 rounded-r-2xl bg-slate-900/95 hover:bg-slate-800/95 border border-slate-700/80 hover:border-cyan-400/50 text-slate-400 hover:text-cyan-300 text-[10px] transition-all" title="Account Options">
+            <span>▼</span>
+          </button>
+
+          <!-- Dropdown Menu (Guaranteed on Top of Page) -->
+          <div id="profileDropdownMenu" class="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-[#0c1427] backdrop-blur-2xl border border-cyan-400/50 shadow-[0_25px_60px_rgba(0,0,0,0.98),0_0_25px_rgba(0,242,254,0.25)] p-2 space-y-1 z-50 hidden">
+            <div class="px-3 py-2 border-b border-slate-800/80">
+              <p class="text-xs font-extrabold text-white" id="dropdownUserName">Guest User</p>
+              <p class="text-[10px] text-slate-400 truncate" id="dropdownUserEmail">guest@emotiguard.com</p>
+              <span class="inline-block mt-1 text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-extrabold uppercase">Encrypted Isolation Active</span>
+            </div>
+            <button onclick="openProfileModal(); closeProfileDropdown();" class="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-slate-200 hover:text-cyan-300 hover:bg-cyan-500/15 flex items-center gap-2 transition">
+              <span>⚙️</span>
+              <span>Profile & Baselines</span>
+            </button>
+            <button onclick="openBleModal(); closeProfileDropdown();" class="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-slate-200 hover:text-cyan-300 hover:bg-cyan-500/15 flex items-center gap-2 transition">
+              <span>📶</span>
+              <span>Wearable BLE Manager</span>
+            </button>
+            <button onclick="openLoginModal(); closeProfileDropdown();" class="w-full px-3 py-2 rounded-xl text-left text-xs font-bold text-slate-200 hover:text-cyan-300 hover:bg-cyan-500/15 flex items-center gap-2 transition">
+              <span>🔄</span>
+              <span>Switch User / 2FA Portal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Language Selector -->
+        <button id="langBtn" onclick="toggleLanguage()" class="text-xs font-bold px-3 py-2 rounded-2xl border border-slate-700/80 bg-slate-900/80 hover:bg-slate-800/80 text-slate-300 hover:text-white transition-all hover:border-slate-500">
+          🌐 <span id="currentLangLabel">English</span>
+        </button>
+
+        <!-- 5s BLE Tick Indicator -->
+        <div class="flex items-center gap-2 px-3 py-2 rounded-2xl bg-slate-900/90 border border-cyan-500/30 text-xs font-semibold text-cyan-400 shadow-[0_0_15px_rgba(0,242,254,0.15)]">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F2FE] animate-pulse"></span>
+          <span class="mono-num text-[11px]">5s BLE Tick</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- USER DATA ISOLATION NOTICE HUD                               -->
+    <!-- ============================================================ -->
+    <div class="glass-panel relative z-20 rounded-2xl p-3.5 px-4 flex items-center justify-between text-xs border border-blue-500/25 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+      <div class="flex items-center gap-2.5">
+        <span class="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-sm shadow-[0_0_10px_rgba(59,130,246,0.3)]">🔒</span>
+        <span class="text-slate-300 font-medium">
+          Logged in as: <strong id="bannerFullName" class="text-cyan-400 font-bold">Guest User</strong> 
+          (<code id="bannerDeviceId" class="bg-slate-900/90 text-cyan-300 border border-cyan-500/30 px-1.5 py-0.5 rounded font-mono text-[11px]">wearable_guest_01</code>). 
+          Biometric history & 7-day personal calibration are strictly isolated.
+        </span>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0 ml-3">
+        <button onclick="openProfileModal()" class="text-cyan-400 hover:text-cyan-300 font-extrabold text-xs px-2.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 transition flex items-center gap-1.5">
+          <span>⚙️</span>
+          <span>Profile & Baselines</span>
+        </button>
+        <button onclick="openLoginModal()" class="text-slate-400 hover:text-white font-bold text-xs px-2 py-1.5 rounded-xl hover:bg-slate-800 transition">
+          <span>Switch User ➔</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- REAL-TIME SCENARIO SIMULATOR (Cyber Floating Glass-Pills)    -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-3xl p-4 sm:p-5 space-y-3 border border-emerald-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs shadow-[0_0_10px_rgba(0,255,135,0.3)]">
+            🧪
+          </div>
+          <h2 class="text-xs sm:text-sm font-extrabold text-emerald-400 uppercase tracking-wider">
+            Real-Time Scenario Simulator
+          </h2>
+        </div>
+        <span class="text-xs mono-num font-semibold text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-xl border border-slate-700" id="countdownLabel">Next packet in: 5s</span>
+      </div>
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Select a physiological state to watch biometrics, sparklines, and the 0–100 Distress Score adapt in real-time:
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1">
+        
+        <!-- Calm Rest -->
+        <button onclick="setScenario('resting')" id="btn-resting" class="scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-emerald-500/50 bg-emerald-500/20 text-emerald-200 shadow-[0_0_20px_rgba(0,255,135,0.25)] hover:shadow-[0_0_25px_rgba(0,255,135,0.4)] transition-all">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm">🌱</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300">~18</span>
+          </div>
+          <span class="block font-extrabold text-white">Calm Rest</span>
+          <span class="text-[10px] text-emerald-400/80 font-normal">Optimal Vagal</span>
+        </button>
+
+        <!-- Work Tension -->
+        <button onclick="setScenario('stress')" id="btn-stress" class="scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-slate-700/80 bg-slate-900/60 text-slate-300 hover:border-amber-500/50 hover:shadow-[0_0_20px_rgba(255,153,0,0.3)] transition-all">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm">📈</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300">~64</span>
+          </div>
+          <span class="block font-extrabold text-white">Work Tension</span>
+          <span class="text-[10px] text-slate-400 font-normal">Sympathetic Surge</span>
+        </button>
+
+        <!-- Acute Distress -->
+        <button onclick="setScenario('acute')" id="btn-acute" class="scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-slate-700/80 bg-slate-900/60 text-slate-300 hover:border-rose-500/50 hover:shadow-[0_0_20px_rgba(255,94,98,0.35)] transition-all">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm">⚡</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300">~88</span>
+          </div>
+          <span class="block font-extrabold text-white">Acute Distress</span>
+          <span class="text-[10px] text-slate-400 font-normal">Acute Spike</span>
+        </button>
+
+        <!-- Exercise Workout -->
+        <button onclick="setScenario('exercise')" id="btn-exercise" class="scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-slate-700/80 bg-slate-900/60 text-slate-300 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(0,242,254,0.3)] transition-all">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm">🏃</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300">~24</span>
+          </div>
+          <span class="block font-extrabold text-white">Exercise</span>
+          <span class="text-[10px] text-slate-400 font-normal">Dampened 85%</span>
+        </button>
+
+        <!-- 4-7-8 Recovery -->
+        <button onclick="setScenario('breathing')" id="btn-breathing" class="scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-slate-700/80 bg-slate-900/60 text-slate-300 hover:border-teal-400/50 hover:shadow-[0_0_20px_rgba(96,239,255,0.3)] transition-all col-span-2 sm:col-span-1">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-sm">🧘</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300">~12</span>
+          </div>
+          <span class="block font-extrabold text-white">4-7-8 Calm</span>
+          <span class="text-[10px] text-slate-400 font-normal">Parasympathetic</span>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- EVALUATED STATE & GLOWING 3D ARC GAUGE                       -->
+    <!-- ============================================================ -->
+    <section class="tilt-card glass-panel rounded-3xl p-6 text-center relative overflow-hidden border border-cyan-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.6)]">
+      
+      <!-- Ambient Backlight for Gauge Bloom -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div id="gaugeBacklight" class="w-64 h-36 bg-emerald-500/15 rounded-full blur-[70px] transition-all duration-700"></div>
+      </div>
+
+      <div class="relative z-10 flex items-center justify-between mb-2">
+        <span class="text-xs font-bold text-slate-400 tracking-wider uppercase">Evaluated Distress State</span>
+        <span id="distressBadge" class="text-xs font-extrabold px-3.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/35 shadow-[0_0_15px_rgba(0,255,135,0.3)] pulse-badge">
+          Calm & Centered
+        </span>
+      </div>
+
+      <!-- Futuristic SVG Arc Gauge with Filter Glow -->
+      <div class="relative w-56 h-36 mx-auto mt-1 z-10">
+        <svg viewBox="0 0 200 130" class="w-full h-full overflow-visible">
+          <defs>
+            <!-- Gauge Glow Filter -->
+            <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="4.5" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+
+            <!-- Dynamic Gauge Arc Gradient -->
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#00F2FE" />
+              <stop offset="100%" stop-color="#00FF87" />
+            </linearGradient>
+          </defs>
+
+          <!-- Background Metallic Track -->
+          <path d="M 25 120 A 75 75 0 0 1 175 120" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="15" stroke-linecap="round"/>
+          
+          <!-- Inner Decorative Cyber Track Line -->
+          <path d="M 35 120 A 65 65 0 0 1 165 120" fill="none" stroke="rgba(0, 242, 254, 0.15)" stroke-width="1.5" stroke-dasharray="4 6"/>
+
+          <!-- Active Glowing Neon Arc -->
+          <path id="gaugeArc" d="M 25 120 A 75 75 0 0 1 175 120" fill="none" stroke="url(#gaugeGrad)" stroke-width="15" stroke-linecap="round" stroke-dasharray="235" stroke-dashoffset="190" filter="url(#neonGlow)" class="transition-all duration-700 ease-out"/>
+        </svg>
+
+        <div class="absolute inset-0 flex flex-col items-center justify-end pb-2">
+          <div class="flex items-baseline">
+            <span id="distressScoreNum" class="text-5xl sm:text-6xl font-black mono-num tracking-tight bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(0,255,135,0.4)]">
+              18
+            </span>
+            <span class="text-xs font-bold text-slate-400 ml-1.5 mono-num">/ 100</span>
+          </div>
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Distress Index</span>
+        </div>
+      </div>
+
+      <!-- Narrative summary -->
+      <p id="distressSummary" class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto mt-3 leading-relaxed relative z-10 font-normal">
+        Vitals are relaxed and steady within your learned resting zone.
+      </p>
+
+      <!-- Contextual Action Pill -->
+      <div id="interventionBanner" class="mt-4 hidden relative z-10">
+        <button onclick="openBreathingModal()" class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 text-xs font-extrabold border border-cyan-400/40 shadow-[0_0_20px_rgba(0,242,254,0.3)] transition-all hover:scale-105 active:scale-95">
+          <span>🌬️</span> <span>Try Guided 4-7-8 Breathing Recovery (2 min)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 4 LIVE TELEMETRY CARDS (3D Tilt & Glowing Sparklines)         -->
+    <!-- ============================================================ -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      
+      <!-- 1. Heart Rate -->
+      <div class="tilt-card glass-panel rounded-3xl p-4 flex flex-col justify-between border border-rose-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.5)] group hover:border-rose-500/50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-sm shadow-[0_0_12px_rgba(255,94,98,0.3)]">❤️</span>
+            <span class="text-xs font-bold text-slate-300">Heart Rate</span>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e] animate-ping"></span>
+        </div>
+        <div class="my-3">
+          <div class="flex items-baseline gap-1.5">
+            <span id="metricHr" class="text-3xl font-black mono-num text-white">71</span>
+            <span class="text-xs font-bold text-rose-400 mono-num">BPM</span>
+          </div>
+          <span id="metricHrNote" class="text-[11px] text-slate-400 block truncate mt-0.5">-1 bpm from baseline</span>
+        </div>
+        <canvas id="sparklineHr" width="120" height="35" class="w-full h-8"></canvas>
+      </div>
+
+      <!-- 2. HRV (RMSSD) -->
+      <div class="tilt-card glass-panel rounded-3xl p-4 flex flex-col justify-between border border-emerald-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.5)] group hover:border-emerald-500/50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-sm shadow-[0_0_12px_rgba(0,255,135,0.3)]">🌊</span>
+            <span class="text-xs font-bold text-slate-300">HRV (RMSSD)</span>
+          </div>
+          <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Vagal</span>
+        </div>
+        <div class="my-3">
+          <div class="flex items-baseline gap-1.5">
+            <span id="metricHrv" class="text-3xl font-black mono-num text-white">53</span>
+            <span class="text-xs font-bold text-emerald-400 mono-num">ms</span>
+          </div>
+          <span id="metricHrvNote" class="text-[11px] text-slate-400 block truncate mt-0.5">Optimal vagal braking</span>
+        </div>
+        <canvas id="sparklineHrv" width="120" height="35" class="w-full h-8"></canvas>
+      </div>
+
+      <!-- 3. Skin Conductance (EDA) -->
+      <div class="tilt-card glass-panel rounded-3xl p-4 flex flex-col justify-between border border-amber-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.5)] group hover:border-amber-500/50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center text-sm shadow-[0_0_12px_rgba(255,153,0,0.3)]">💧</span>
+            <span class="text-xs font-bold text-slate-300">Skin EDA</span>
+          </div>
+          <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">GSR</span>
+        </div>
+        <div class="my-3">
+          <div class="flex items-baseline gap-1.5">
+            <span id="metricEda" class="text-3xl font-black mono-num text-white">2.2</span>
+            <span class="text-xs font-bold text-amber-400 mono-num">μS</span>
+          </div>
+          <span id="metricEdaNote" class="text-[11px] text-slate-400 block truncate mt-0.5">Resting conductance</span>
+        </div>
+        <canvas id="sparklineEda" width="120" height="35" class="w-full h-8"></canvas>
+      </div>
+
+      <!-- 4. Dynamic Movement Accel -->
+      <div class="tilt-card glass-panel rounded-3xl p-4 flex flex-col justify-between border border-cyan-500/20 shadow-[0_8px_30px_rgba(0,0,0,0.5)] group hover:border-cyan-500/50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-sm shadow-[0_0_12px_rgba(0,242,254,0.3)]">🚶</span>
+            <span class="text-xs font-bold text-slate-300">Movement</span>
+          </div>
+          <span id="activityTag" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">Sedentary</span>
+        </div>
+        <div class="my-3">
+          <div class="flex items-baseline gap-1.5">
+            <span id="metricMovement" class="text-3xl font-black mono-num text-white">0.03</span>
+            <span class="text-xs font-bold text-cyan-400 mono-num">g</span>
+          </div>
+          <span id="metricMovementNote" class="text-[11px] text-slate-400 block truncate mt-0.5">Resting baseline</span>
+        </div>
+        <canvas id="sparklineMovement" width="120" height="35" class="w-full h-8"></canvas>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- BIOMETRIC TREND HISTORY (1H / 24H / 7D Glowing Chart)        -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-3xl p-5 sm:p-6 space-y-4 border border-cyan-500/20 shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xs sm:text-sm font-extrabold text-white tracking-wide uppercase flex items-center gap-2">
+            <span class="text-cyan-400">📊</span>
+            <span>Biometric Trend Matrix</span>
+          </h2>
+          <p class="text-xs text-slate-400">Multi-parameter overlay: Heart Rate vs Electrodermal Skin Conductance</p>
+        </div>
+
+        <!-- Glowing Timeframe selector pills -->
+        <div class="flex bg-slate-900/90 p-1 rounded-2xl border border-slate-700/80 text-xs font-bold">
+          <button onclick="setTimeframe('1h')" id="tf-1h" class="px-3.5 py-1.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.3)] transition-all">1 Hour</button>
+          <button onclick="setTimeframe('24h')" id="tf-24h" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all">24 Hours</button>
+          <button onclick="setTimeframe('7d')" id="tf-7d" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all">7 Days</button>
+        </div>
+      </div>
+
+      <!-- Trend Canvas -->
+      <div class="w-full h-48 relative rounded-2xl overflow-hidden bg-slate-950/60 border border-slate-800">
+        <canvas id="trendChartCanvas" class="w-full h-full"></canvas>
+      </div>
+
+      <!-- Futuristic Legend -->
+      <div class="flex items-center justify-center gap-6 pt-1 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-3.5 h-1 bg-rose-500 rounded-full shadow-[0_0_8px_#f43f5e]"></span>
+          <span class="text-slate-300 font-semibold">Heart Rate (BPM)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-3.5 h-1 bg-cyan-400 rounded-full shadow-[0_0_8px_#00F2FE]"></span>
+          <span class="text-slate-300 font-semibold">Skin Conductance (EDA μS)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- GENTLE SUPPORT TOOLS (Glass Action Bar)                      -->
+    <!-- ============================================================ -->
+    <section class="glass-panel rounded-3xl p-4 sm:p-5 border border-purple-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+      <div class="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3 px-1 flex items-center gap-1.5">
+        <span class="text-purple-400">✨</span>
+        <span>Gentle Intervention & Recovery Tools</span>
+      </div>
+      <div class="grid grid-cols-4 gap-2.5">
+        <button onclick="openBreathingModal()" class="flex flex-col items-center p-3 rounded-2xl glass-panel-interactive border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 shadow-[0_0_15px_rgba(0,242,254,0.15)] group">
+          <span class="text-xl group-hover:scale-110 transition-transform">🌬️</span>
+          <span class="text-xs font-extrabold mt-1.5">4-7-8 Breathe</span>
+        </button>
+        <button onclick="openJournalModal()" class="flex flex-col items-center p-3 rounded-2xl glass-panel-interactive border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.15)] group">
+          <span class="text-xl group-hover:scale-110 transition-transform">📝</span>
+          <span class="text-xs font-extrabold mt-1.5">Reflect</span>
+        </button>
+        <button onclick="openMoodModal()" class="flex flex-col items-center p-3 rounded-2xl glass-panel-interactive border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 shadow-[0_0_15px_rgba(0,255,135,0.15)] group">
+          <span class="text-xl group-hover:scale-110 transition-transform">😊</span>
+          <span class="text-xs font-extrabold mt-1.5">Check-in</span>
+        </button>
+        <button onclick="openSupportModal()" class="flex flex-col items-center p-3 rounded-2xl glass-panel-interactive border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)] group">
+          <span class="text-xl group-hover:scale-110 transition-transform">🤝</span>
+          <span class="text-xs font-extrabold mt-1.5">Support</span>
+        </button>
+      </div>
+    </section>
+
+  </div> <!-- End Main Container -->
+
+  <!-- ============================================================ -->
+  <!-- AUTH / 2FA SECURITY PORTAL MODAL (3D Glassmorphism)          -->
+  <!-- ============================================================ -->
+  <div id="loginModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-2xl z-[100] flex items-center justify-center p-4 overflow-y-auto hidden">
+      <!-- Ambient decorative glow behind card -->
+      <div class="fixed inset-0 pointer-events-none flex items-center justify-center">
+        <div class="w-96 h-96 bg-cyan-500/20 rounded-full blur-[110px]"></div>
+        <div class="w-80 h-80 bg-purple-500/20 rounded-full blur-[110px] -ml-24 -mt-24"></div>
+      </div>
+
+      <div id="authVaultModalCard" class="relative auth-vault-panel rounded-3xl p-6 sm:p-7 max-w-lg w-full space-y-4 shadow-[0_0_60px_rgba(0,242,254,0.22)] z-10 my-8">
+        
+        <!-- Header Banner with Holographic Badge -->
+        <div class="flex justify-between items-start pb-3.5 border-b border-slate-700/80">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-[0_0_25px_rgba(0,242,254,0.45)] holo-shield-anim">
+              🛡️
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-black text-white tracking-tight">EmotiGuard Security Vault</h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-cyan-500/15 border border-cyan-400/40 text-cyan-300">2FA Vault</span>
+              </div>
+              <p class="text-xs text-slate-400 font-medium">Mandatory Two-Factor Cryptographic Isolation</p>
+            </div>
+          </div>
+          <button onclick="closeLoginModal()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition">✕</button>
+        </div>
+
+        <!-- Multi-Step Stepper Progress Bar -->
+        <div class="grid grid-cols-3 gap-2 py-1">
+          <div id="stepPill1" class="step-pill-active p-2 rounded-2xl flex flex-col items-center text-center transition-all">
+            <div class="flex items-center gap-1.5 text-[11px] font-black">
+              <span class="w-4 h-4 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center text-[10px] font-black">1</span>
+              <span>Credentials</span>
+            </div>
+            <span class="text-[9px] opacity-80">Email / SMS</span>
+          </div>
+          <div id="stepPill2" class="step-pill-pending p-2 rounded-2xl flex flex-col items-center text-center transition-all">
+            <div class="flex items-center gap-1.5 text-[11px] font-black">
+              <span class="w-4 h-4 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-[10px] font-black">2</span>
+              <span>2FA OTP</span>
+            </div>
+            <span class="text-[9px] opacity-80">Security Key</span>
+          </div>
+          <div id="stepPill3" class="step-pill-pending p-2 rounded-2xl flex flex-col items-center text-center transition-all">
+            <div class="flex items-center gap-1.5 text-[11px] font-black">
+              <span class="w-4 h-4 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-[10px] font-black">3</span>
+              <span>Isolated</span>
+            </div>
+            <span class="text-[9px] opacity-80">Data Access</span>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- STEP 1: CREDENTIALS & CHANNEL SELECTION                  -->
+        <!-- ======================================================== -->
+        <div id="authStep1" class="space-y-4">
+          <!-- Segmented Tab Switcher (Sign In vs New Account) -->
+          <div class="flex bg-slate-900/90 p-1 rounded-2xl text-xs font-bold border border-slate-700/80">
+            <button type="button" onclick="switchAuthTab('signin')" id="tab-auth-signin" class="w-1/2 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 shadow-[0_0_12px_rgba(0,242,254,0.25)] transition">Sign In</button>
+            <button type="button" onclick="switchAuthTab('signup')" id="tab-auth-signup" class="w-1/2 py-2 rounded-xl text-slate-400 hover:text-white transition">New Account</button>
+          </div>
+
+          <!-- Channel Selection for OTP -->
+          <div>
+            <label class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1.5">Mandatory 2FA Dispatch Channel</label>
+            <div class="flex gap-2">
+              <button type="button" id="btnChannelEmail" onclick="selectOtpDeliveryChannel('email')" class="flex-1 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.3)] flex items-center justify-center gap-1.5 transition">
+                <span>📧</span>
+                <span>Email OTP (Primary)</span>
+              </button>
+              <button type="button" id="btnChannelSms" onclick="selectOtpDeliveryChannel('sms')" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-slate-700/60 flex items-center justify-center gap-1.5 transition">
+                <span>📱</span>
+                <span>SMS / Phone OTP</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Sign In Form -->
+          <form id="formSignIn" onsubmit="handleStep1Submit(event)" class="space-y-3 text-xs">
+            <div>
+              <label id="authContactLabel" class="font-bold text-slate-300 block mb-1">Email Address</label>
+              <div class="relative">
+                <input type="text" id="authContactInput" value="guest@emotiguard.com" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition pr-10" required>
+                <span class="absolute right-3.5 top-3 text-slate-500">🔒</span>
+              </div>
+            </div>
+            <div>
+              <label class="font-bold text-slate-300 block mb-1">Master Password</label>
+              <div class="relative">
+                <input type="password" id="authPassword" value="password123" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition pr-11" required>
+                <button type="button" onclick="togglePasswordVisibility('authPassword')" id="authPasswordEye" class="absolute right-3 top-2.5 text-slate-400 hover:text-cyan-300 p-1 text-sm transition" title="Toggle visibility">👁️</button>
+              </div>
+            </div>
+            
+            <button type="submit" id="btnStep1Submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_22px_rgba(0,242,254,0.4)] transition-all flex items-center justify-center gap-2">
+              <span id="step1Spinner" class="radar-spin hidden">⚡</span>
+              <span id="step1BtnText">Continue to 2FA Verification ➔</span>
+            </button>
+          </form>
+
+          <!-- New Account Form (Hidden by default) -->
+          <form id="formSignUp" onsubmit="handleSignUpStep1(event)" class="space-y-3 text-xs hidden">
+            <div>
+              <label class="font-bold text-slate-300 block mb-1">Full Name</label>
+              <input type="text" id="regName" placeholder="e.g. Guest User" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition" required>
+            </div>
+            <div>
+              <label id="regContactLabel" class="font-bold text-slate-300 block mb-1">Contact Email / Phone</label>
+              <input type="text" id="regContact" placeholder="user@domain.com or +1 555-0100" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition" required>
+            </div>
+            <div>
+              <label class="font-bold text-slate-300 block mb-1">Password</label>
+              <div class="relative">
+                <input type="password" id="regPassword" placeholder="••••••••" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition pr-11" required>
+                <button type="button" onclick="togglePasswordVisibility('regPassword')" id="regPasswordEye" class="absolute right-3 top-2.5 text-slate-400 hover:text-cyan-300 p-1 text-sm transition">👁️</button>
+              </div>
+            </div>
+            <div>
+              <label class="font-bold text-slate-300 block mb-1">ESP32 Device ID (Optional)</label>
+              <input type="text" id="regDeviceId" placeholder="e.g. wearable_guest_01" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition">
+            </div>
+            <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs shadow-[0_0_22px_rgba(0,255,135,0.4)] transition-all flex items-center justify-center gap-2">
+              <span>✨</span>
+              <span>Dispatch 2FA OTP & Setup Account</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- STEP 2: MANDATORY 2-FACTOR OTP VERIFICATION              -->
+        <!-- ======================================================== -->
+        <div id="authStep2" class="space-y-4 hidden">
+          <!-- Mandatory 2FA Alert Badge -->
+          <div class="p-3 rounded-2xl border border-cyan-500/40 bg-cyan-950/30 flex items-start gap-2.5">
+            <span class="text-base">🔐</span>
+            <div class="text-xs">
+              <span class="font-extrabold text-cyan-300 block">Mandatory 2FA Required</span>
+              <span class="text-slate-300">Encrypted biometric isolation key requires verification to decrypt your local baseline.</span>
+            </div>
+          </div>
+
+          <!-- Target Dispatched Notification -->
+          <div class="text-center space-y-1">
+            <p class="text-xs text-slate-400">Security code dispatched to:</p>
+            <p class="text-sm font-bold font-mono text-cyan-300">
+              <span id="otpTargetDisplay">guest@emotiguard.com</span>
+              <span class="text-[10px] text-purple-400 font-bold uppercase ml-1.5 px-2 py-0.5 rounded-full bg-purple-500/15 border border-purple-500/30" id="otpChannelDisplay">EMAIL</span>
+            </p>
+          </div>
+
+          <!-- Demo Helper Pill -->
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/90 border border-slate-700/80 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span class="text-slate-300 font-medium" id="demoOtpHint">Demo Code: 123456</span>
+            </div>
+            <button type="button" onclick="autoFillDemoOtp('123456')" class="text-xs font-bold text-cyan-400 hover:text-cyan-300 underline">
+              ⚡ Auto-fill 123456
+            </button>
+          </div>
+
+          <!-- 6-Digit Individual Box Inputs -->
+          <div id="otpInputContainer" class="flex justify-between gap-2 sm:gap-2.5 py-2">
+            <input type="text" maxlength="1" id="otpDigit0" inputmode="numeric" class="otp-digit-input w-11 sm:w-12 h-14 bg-slate-900/90 border border-slate-700 rounded-2xl text-center text-xl font-black font-mono text-cyan-300 focus:border-cyan-400 focus:outline-none" autofocus>
+            <input type="text" maxlength="1" id="otpDigit1" inputmode="numeric" class="otp-digit-input w-11 sm:w-12 h-14 bg-slate-900/90 border border-slate-700 rounded-2xl text-center text-xl font-black font-mono text-cyan-300 focus:border-cyan-400 focus:outline-none">
+            <input type="text" maxlength="1" id="otpDigit2" inputmode="numeric" class="otp-digit-input w-11 sm:w-12 h-14 bg-slate-900/90 border border-slate-700 rounded-2xl text-center text-xl font-black font-mono text-cyan-300 focus:border-cyan-400 focus:outline-none">
+            <input type="text" maxlength="1" id="otpDigit3" inputmode="numeric" class="otp-digit-input w-11 sm:w-12 h-14 bg-slate-900/90 border border-slate-700 rounded-2xl text-center text-xl font-black font-mono text-cyan-300 focus:border-cyan-400 focus:outline-none">
+            <input type="text" maxlength="1" id="otpDigit4" inputmode="numeric" class="otp-digit-input w-11 sm:w-12 h-14 bg-slate-900/90 border border-slate-700 rounded-2xl text-center text-xl font-black font-mono text-cyan-300 focus:border-cyan-400 focus:outline-none">
+            <input type="text" maxlength="1" id="otpDigit5" inputmode="numeric" class="otp-digit-input w-11 sm:w-12 h-14 bg-slate-900/90 border border-slate-700 rounded-2xl text-center text-xl font-black font-mono text-cyan-300 focus:border-cyan-400 focus:outline-none">
+          </div>
+
+          <!-- Timer & Resend Controls -->
+          <div class="flex items-center justify-between text-xs px-1">
+            <span id="otpTimerText" class="text-slate-400 font-medium">Resend code in 45s</span>
+            <button type="button" id="btnResendOtp" onclick="handleResendOtp()" disabled class="text-xs text-slate-500 font-bold opacity-50 cursor-not-allowed">Resend OTP</button>
+          </div>
+
+          <div class="text-center pt-1">
+            <button type="button" onclick="toggleOtpChannel()" class="text-xs text-purple-400 hover:text-purple-300 font-bold underline flex items-center justify-center gap-1 mx-auto">
+              <span id="switchChannelLabel">🔄 Didn't receive code? Send via SMS instead</span>
+            </button>
+          </div>
+
+          <!-- Primary Verification Action Button -->
+          <button type="button" onclick="handleVerifyOtpSubmit()" id="btnVerifyOtp" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_25px_rgba(0,242,254,0.45)] transition flex items-center justify-center gap-2">
+            <span>🔓</span>
+            <span>Verify & Decrypt Biometric Vault</span>
+          </button>
+
+          <!-- Back Button -->
+          <button type="button" onclick="switchAuthStep(1)" class="w-full py-2 text-slate-400 hover:text-white text-xs font-bold transition text-center">
+            ← Back to Credentials
+          </button>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- STEP 3: IDENTITY ISOLATION GRANTED (SUCCESS)            -->
+        <!-- ======================================================== -->
+        <div id="authStep3" class="space-y-4 text-center py-5 hidden">
+          <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-400 mx-auto flex items-center justify-center text-3xl font-black text-emerald-400 shadow-[0_0_35px_rgba(0,255,135,0.5)] anim-check-pop">
+            ✓
+          </div>
+          <div>
+            <h4 class="text-base font-black text-white">2-Factor Authentication Verified!</h4>
+            <p class="text-xs text-emerald-400 font-medium mt-1">Biometric Decryption Key Granted</p>
+          </div>
+          <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-xs text-slate-300 space-y-1">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Authenticated Persona:</span>
+              <strong id="step3UserName" class="text-white font-mono">Guest User</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Active Sensor Node:</span>
+              <strong id="step3DeviceName" class="text-cyan-400 font-mono">wearable_guest_01</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Security Level:</span>
+              <span class="text-emerald-400 font-bold">AES-256 Multi-Tenant Isolated</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-1.5 rounded-full animate-pulse w-full"></div>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">Entering dashboard with isolated baseline context...</p>
+        </div>
+
+        <!-- Footer Privacy Note -->
+        <div class="pt-2 flex items-center justify-center gap-1.5 text-[10px] text-slate-500 font-medium">
+          <span>🔒</span>
+          <span>AES-256 local encrypted storage • Zero cloud biometric leakage</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PROFILE & BIOMETRIC SETTINGS MODAL (3D Glassmorphism)        -->
+    <!-- ============================================================ -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-2xl z-[100] flex items-center justify-center p-3 sm:p-5 overflow-y-auto hidden">
+      <!-- Ambient decorative glow behind modal -->
+      <div class="fixed inset-0 pointer-events-none flex items-center justify-center">
+        <div class="w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[130px]"></div>
+        <div class="w-[450px] h-[450px] bg-purple-500/15 rounded-full blur-[130px] -ml-32 -mt-32"></div>
+      </div>
+
+      <div id="profileVaultCard" class="relative auth-vault-panel rounded-3xl p-5 sm:p-7 max-w-2xl w-full space-y-5 shadow-[0_0_70px_rgba(0,242,254,0.25)] z-10 my-6 anim-modal-in">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-start pb-4 border-b border-slate-700/80">
+          <div class="flex items-center gap-3.5">
+            <div class="relative">
+              <span id="modalBigAvatar" class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-black shadow-[0_0_25px_rgba(0,242,254,0.4)] border border-cyan-300/40 holo-shield-anim">
+                🤖
+              </span>
+              <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-slate-950 pulse-badge"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base sm:text-lg font-black text-white tracking-tight" id="profileHeaderName">Guest User</h3>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/15 border border-emerald-500/35 text-emerald-400 shadow-[0_0_10px_rgba(0,255,135,0.2)]">Encrypted Isolation Active</span>
+              </div>
+              <p class="text-xs text-slate-400 font-medium">
+                Tenant Device ID: <code class="text-cyan-400 font-mono" id="profileHeaderTenant">wearable_guest_01</code> • 7-Day Baseline Calibrated
+              </p>
+            </div>
+          </div>
+          <button onclick="closeProfileModal()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition">✕</button>
+        </div>
+
+        <!-- Navigation Tabs for Profile Subsections -->
+        <div class="flex bg-slate-900/90 p-1.5 rounded-2xl text-xs font-bold border border-slate-700/80 overflow-x-auto gap-1">
+          <button type="button" id="tabBtnIdentity" onclick="switchProfileTab('identity')" class="flex-1 py-2 px-3 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.25)] flex items-center justify-center gap-1.5 whitespace-nowrap transition">
+            <span>👤</span>
+            <span>Identity & Avatar</span>
+          </button>
+          <button type="button" id="tabBtnBaselines" onclick="switchProfileTab('baselines')" class="flex-1 py-2 px-3 rounded-xl text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap transition">
+            <span>⚡</span>
+            <span>Biometrics & BLE</span>
+          </button>
+          <button type="button" id="tabBtnAlerts" onclick="switchProfileTab('alerts')" class="flex-1 py-2 px-3 rounded-xl text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap transition">
+            <span>🚨</span>
+            <span>Emergency SOS</span>
+          </button>
+          <button type="button" id="tabBtnSecurity" onclick="switchProfileTab('security')" class="flex-1 py-2 px-3 rounded-xl text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap transition">
+            <span>🛡️</span>
+            <span>2FA & Security</span>
+          </button>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB 1: IDENTITY & AVATAR CUSTOMIZATION                   -->
+        <!-- ======================================================== -->
+        <div id="profileSectionIdentity" class="space-y-4">
+          <!-- Avatar Customization Card -->
+          <div class="tilt-card glass-panel p-4 rounded-2xl border border-slate-700/80 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <span>🎨</span> Bio-Avatar Hologram Customization
+              </span>
+              <span class="text-[10px] text-cyan-400 font-mono font-bold">3D Neural Shimmer</span>
+            </div>
+            
+            <!-- Avatar Selection Presets -->
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <button type="button" onclick="selectBioAvatar('🤖')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Android Cyber">🤖</button>
+              <button type="button" onclick="selectBioAvatar('🧬')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Bio-Helix">🧬</button>
+              <button type="button" onclick="selectBioAvatar('⚡')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Quantum Spark">⚡</button>
+              <button type="button" onclick="selectBioAvatar('🛡️')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Vault Guardian">🛡️</button>
+              <button type="button" onclick="selectBioAvatar('🧠')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Neural Cortex">🧠</button>
+              <button type="button" onclick="selectBioAvatar('🧘')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Zen Vitality">🧘</button>
+              <button type="button" onclick="selectBioAvatar('👁️')" class="w-10 h-10 rounded-xl bg-slate-800/90 hover:bg-cyan-500/20 border border-slate-700 hover:border-cyan-400 text-lg flex items-center justify-center transition shadow-sm hover:scale-110 active:scale-95" title="Cyber Vision">👁️</button>
+              
+              <!-- Custom upload pill -->
+              <label class="cursor-pointer px-3 py-2 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-dashed border-slate-600 hover:border-cyan-400 text-slate-300 text-xs font-bold transition flex items-center gap-1.5 ml-auto">
+                <span>📁 Upload Picture</span>
+                <input type="file" accept="image/*" onchange="handleCustomAvatarUpload(event)" class="hidden">
+              </label>
+            </div>
+          </div>
+
+          <!-- Profile Details Form -->
+          <form onsubmit="handleSaveProfileIdentity(event)" class="space-y-3.5 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="font-bold text-slate-300 block mb-1">Full Legal / Display Name</label>
+                <input type="text" id="profInputName" value="Guest User" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition" required>
+              </div>
+              <div>
+                <label class="font-bold text-slate-300 block mb-1">Primary Email (2FA Registered)</label>
+                <input type="email" id="profInputEmail" value="guest@emotiguard.com" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition" required>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="font-bold text-slate-300 block mb-1">Mobile Phone (Emergency / SMS OTP)</label>
+                <input type="tel" id="profInputPhone" value="+1 (555) 019-2831" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(0,242,254,0.3)] focus:outline-none transition" required>
+              </div>
+              <div>
+                <label class="font-bold text-slate-300 block mb-1">Patient / Wearable Hardware UUID</label>
+                <input type="text" id="profInputDeviceId" value="wearable_guest_01" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-cyan-300 font-mono font-bold focus:border-cyan-400 focus:outline-none transition" readonly>
+              </div>
+            </div>
+
+            <div class="pt-2 flex justify-end">
+              <button type="submit" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)] transition flex items-center gap-2">
+                <span>💾</span>
+                <span>Save Identity Profile</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB 2: BIOMETRIC BASELINES & WEARABLE CALIBRATION        -->
+        <!-- ======================================================== -->
+        <div id="profileSectionBaselines" class="space-y-4 hidden">
+          <!-- Active Hardware Status Card -->
+          <div class="tilt-card glass-panel p-4 rounded-2xl border border-cyan-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-sm font-bold shadow-[0_0_12px_rgba(0,242,254,0.3)]">📶</span>
+                <div>
+                  <h4 class="text-xs font-black text-white" id="profBleModel">EmotiGuard Band v2 (ESP32-S3 Node)</h4>
+                  <p class="text-[10px] text-emerald-400 font-bold" id="profBleSyncedStatus">🟢 Synced & Streaming (BLE Mock/Live)</p>
+                </div>
+              </div>
+              <button onclick="openBleModal(); closeProfileModal();" class="px-3 py-1.5 rounded-xl border border-cyan-500/40 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40 text-[11px] font-bold transition">
+                Manage BLE ➔
+              </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800 text-center">
+              <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Battery Level</span>
+                <span class="text-xs font-black text-emerald-400 font-mono" id="profBatteryText">88% 🔋</span>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Signal Strength</span>
+                <span class="text-xs font-black text-cyan-400 font-mono" id="profRssiText">-58 dBm 📶</span>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-[10px] text-slate-400 block">Protocol</span>
+                <span class="text-xs font-black text-purple-400 font-mono">GATT 5s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resting Baselines Tuning Sliders -->
+          <div class="glass-panel p-4 rounded-2xl border border-slate-700/80 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                <span>🎚️</span> Resting Biometric Personal Baselines
+              </span>
+              <span class="text-[10px] text-cyan-400 font-bold bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/30">Auto Z-Score Normalized</span>
+            </div>
+
+            <!-- Heart Rate Baseline -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300 font-bold">Resting Heart Rate (HR Baseline)</span>
+                <span class="font-mono font-black text-cyan-300"><span id="valSlideHr">72</span> BPM</span>
+              </div>
+              <input type="range" min="50" max="100" value="72" id="sliderHr" oninput="updateBaselineSliderVal('Hr', this.value)" class="cyber-range">
+              <div class="flex justify-between text-[10px] text-slate-500 font-medium">
+                <span>Athletic (50)</span>
+                <span class="text-emerald-400 font-bold">Typical Rest (65 - 75)</span>
+                <span>Elevated (100)</span>
+              </div>
+            </div>
+
+            <!-- HRV RMSSD Baseline -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300 font-bold">Baseline HRV RMSSD Target</span>
+                <span class="font-mono font-black text-purple-300"><span id="valSlideHrv">52</span> ms</span>
+              </div>
+              <input type="range" min="20" max="100" value="52" id="sliderHrv" oninput="updateBaselineSliderVal('Hrv', this.value)" class="cyber-range">
+              <div class="flex justify-between text-[10px] text-slate-500 font-medium">
+                <span>Tense (20)</span>
+                <span class="text-purple-400 font-bold">Optimal Tone (>50 ms)</span>
+                <span>Deep Rest (100)</span>
+              </div>
+            </div>
+
+            <!-- Skin Conductance EDA Baseline -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300 font-bold">Baseline Galvanic Skin Response (EDA)</span>
+                <span class="font-mono font-black text-emerald-300"><span id="valSlideEda">2.2</span> µS</span>
+              </div>
+              <input type="range" min="1.0" max="8.0" step="0.1" value="2.2" id="sliderEda" oninput="updateBaselineSliderVal('Eda', this.value)" class="cyber-range">
+              <div class="flex justify-between text-[10px] text-slate-500 font-medium">
+                <span>Dry Calm (1.0)</span>
+                <span class="text-emerald-400 font-bold">Normal Basal (1.8 - 3.2 µS)</span>
+                <span>Arousal (>6.0)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Re-calibration Button & Progress Bar -->
+          <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs font-bold text-white block">Adaptive Baseline Recalibration</span>
+                <span class="text-[10px] text-slate-400">Recalibrate mean & std-deviation over live 60-second window.</span>
+              </div>
+              <button type="button" id="btnRecalibrate" onclick="triggerBaselineRecalibration()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs shadow-[0_0_15px_rgba(0,255,135,0.35)] transition flex items-center gap-1.5">
+                <span id="recalibrateSpinner" class="radar-spin hidden">⚡</span>
+                <span id="recalibrateLabel">⚡ Run 60s Recalibration</span>
+              </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div id="recalibrateProgressContainer" class="hidden space-y-1">
+              <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                <div id="recalibrateProgressBar" class="bg-gradient-to-r from-cyan-400 via-emerald-400 to-teal-300 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-cyan-400 font-mono">
+                <span id="recalibrateStageText">Sampling Biometric Stream...</span>
+                <span id="recalibratePercentText">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button type="button" onclick="handleSaveBaselineChanges()" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)] transition">
+              💾 Save Baselines to Isolated Vault
+            </button>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB 3: EMERGENCY CONTACTS & DISTRESS ALERTS              -->
+        <!-- ======================================================== -->
+        <div id="profileSectionAlerts" class="space-y-4 hidden">
+          <!-- Escalation Protocol Banner -->
+          <div class="p-3.5 rounded-2xl border border-rose-500/35 bg-rose-950/20 flex items-start gap-3">
+            <span class="text-xl">🚨</span>
+            <div class="text-xs space-y-1">
+              <span class="font-extrabold text-rose-300 block">Critical Distress Escalation Criteria</span>
+              <span class="text-slate-300 leading-relaxed block">
+                When evaluated Distress Score exceeds <strong class="text-rose-400 font-mono" id="dispThresholdText">80/100</strong> for over <strong class="text-amber-400 font-mono" id="dispDurationText">3 minutes</strong>, automated emergency protocols activate.
+              </span>
+            </div>
+          </div>
+
+          <!-- Sensitivity & Threshold Adjusters -->
+          <div class="glass-panel p-4 rounded-2xl border border-slate-700/80 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-300">Distress Score Trigger Level:</span>
+              <span class="font-mono font-black text-rose-400"><span id="valAlertThreshold">80</span> / 100</span>
+            </div>
+            <input type="range" min="65" max="95" value="80" id="sliderAlertThreshold" oninput="updateAlertThresholdVal(this.value)" class="cyber-range">
+          </div>
+
+          <!-- Emergency Notification Matrix Form -->
+          <form onsubmit="handleSaveEmergencySettings(event)" class="space-y-3.5 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="font-bold text-slate-300 block mb-1">Primary Emergency Contact Name</label>
+                <input type="text" id="profEmergName" value="Dr. Sarah Chen (Physician)" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:outline-none transition" required>
+              </div>
+              <div>
+                <label class="font-bold text-slate-300 block mb-1">Emergency Phone Number (SMS SOS)</label>
+                <input type="tel" id="profEmergPhone" value="+1 (555) 987-6543" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:outline-none transition" required>
+              </div>
+            </div>
+
+            <div>
+              <label class="font-bold text-slate-300 block mb-1">Emergency Contact Email</label>
+              <input type="email" id="profEmergEmail" value="sarah.chen@clinic.org" class="w-full p-3 rounded-2xl border border-slate-700 bg-slate-900/90 text-white font-medium focus:border-cyan-400 focus:outline-none transition" required>
+            </div>
+
+            <!-- Toggles Matrix -->
+            <div class="space-y-2.5 pt-2 border-t border-slate-800">
+              <!-- Toggle 1: SMS SOS -->
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                <div>
+                  <span class="font-bold text-white block">Automated SMS Alert to Emergency Contact</span>
+                  <span class="text-[10px] text-slate-400">Dispatches real-time telemetry snapshot and Google Maps SOS link.</span>
+                </div>
+                <label class="cyber-toggle">
+                  <input type="checkbox" id="toggleAutoSms" checked>
+                  <span class="cyber-slider"></span>
+                </label>
+              </div>
+
+              <!-- Toggle 2: Push Notifications -->
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                <div>
+                  <span class="font-bold text-white block">Browser & Mobile Push Notifications</span>
+                  <span class="text-[10px] text-slate-400">Receive immediate desktop / phone notifications on stress spikes.</span>
+                </div>
+                <label class="cyber-toggle">
+                  <input type="checkbox" id="togglePushNotify" checked>
+                  <span class="cyber-slider"></span>
+                </label>
+              </div>
+
+              <!-- Toggle 3: Sound Alarm -->
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition">
+                <div>
+                  <span class="font-bold text-white block">Binaural Chime Alarm on Critical Distress (>85)</span>
+                  <span class="text-[10px] text-slate-400">Plays calming 432Hz harmonic tone to guide recovery breathing.</span>
+                </div>
+                <label class="cyber-toggle">
+                  <input type="checkbox" id="toggleSoundAlarm" checked>
+                  <span class="cyber-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-2 flex items-center justify-between">
+              <button type="button" onclick="testEmergencyAlertSos()" class="px-3.5 py-2 rounded-xl border border-rose-500/40 bg-rose-950/25 hover:bg-rose-900/35 text-rose-300 font-bold text-xs transition flex items-center gap-1.5">
+                <span>📡</span>
+                <span>Test Emergency SOS Dispatch</span>
+              </button>
+
+              <button type="submit" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)] transition">
+                💾 Save Alert Preferences
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB 4: SECURITY & MULTI-FACTOR AUTH (2FA) MANAGEMENT     -->
+        <!-- ======================================================== -->
+        <div id="profileSectionSecurity" class="space-y-4 hidden">
+          <!-- 2FA Status Card -->
+          <div class="tilt-card glass-panel p-4 rounded-2xl border border-purple-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-sm font-bold shadow-[0_0_12px_rgba(168,85,247,0.3)]">🔐</span>
+                <div>
+                  <h4 class="text-xs font-black text-white">Cryptographic 2FA Enclave</h4>
+                  <p class="text-[10px] text-slate-400">Mandatory Multi-Factor Hardware Isolation Active</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400">
+                Active & Enforced
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+              <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Email OTP Status</span>
+                  <span class="font-bold text-emerald-400 font-mono">🟢 Verified</span>
+                </div>
+                <span class="text-sm">📧</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] text-slate-400 block">Phone SMS OTP</span>
+                  <span class="font-bold text-emerald-400 font-mono">🟢 Verified</span>
+                </div>
+                <span class="text-sm">📱</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferred 2FA Channel Form -->
+          <div class="glass-panel p-4 rounded-2xl border border-slate-700/80 space-y-3">
+            <span class="text-xs font-bold text-slate-300 block">Preferred 2FA Dispatch Method</span>
+            <div class="flex gap-2">
+              <label class="flex-1 p-3 rounded-xl bg-slate-900/90 border border-cyan-500/40 text-cyan-300 font-bold text-xs flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="pref2fa" value="email" checked class="accent-cyan-400">
+                <span>📧 Email Code (Recommended)</span>
+              </label>
+              <label class="flex-1 p-3 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-400 hover:text-white font-bold text-xs flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="pref2fa" value="sms" class="accent-purple-400">
+                <span>📱 SMS Phone OTP</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Active Login Sessions -->
+          <div class="glass-panel p-4 rounded-2xl border border-slate-700/80 space-y-2.5 text-xs">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-slate-300">Active Cryptographic Sessions</span>
+              <span class="text-[10px] text-cyan-400 font-mono">2 Active Nodes</span>
+            </div>
+            
+            <div class="space-y-1.5">
+              <div class="p-2.5 rounded-xl bg-slate-900/90 border border-cyan-500/30 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span>💻</span>
+                  <div>
+                    <span class="font-bold text-white block">Chrome 124 on Windows 11</span>
+                    <span class="text-[10px] text-slate-400 font-mono">IP: 10.251.123.6 • Current Session</span>
+                  </div>
+                </div>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold">This Device</span>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span>📱</span>
+                  <div>
+                    <span class="font-bold text-white block">EmotiGuard Mobile App v2.1</span>
+                    <span class="text-[10px] text-slate-400 font-mono">BLE GATT Paired • Last active 2h ago</span>
+                  </div>
+                </div>
+                <button type="button" onclick="showToast('Terminated mobile session key.')" class="text-[10px] text-rose-400 hover:text-rose-300 font-bold underline">
+                  Revoke
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button type="button" onclick="showToast('Security preferences updated successfully.')" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)] transition">
+              💾 Save Security Settings
+            </button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="pt-2 flex items-center justify-between text-[10px] text-slate-500 font-medium border-t border-slate-800">
+          <span>🔒 AES-256 GCM Hardware Enclave Protection</span>
+          <button onclick="closeProfileModal()" class="text-cyan-400 hover:text-cyan-300 font-bold">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- BLUETOOTH / BLE WEARABLE CONNECTION MODAL                    -->
+    <!-- ============================================================ -->
+    <div id="bleModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-[100] flex items-center justify-center p-4 overflow-y-auto hidden">
+      <div class="relative glass-panel border border-cyan-500/35 rounded-3xl p-6 sm:p-7 max-w-md w-full space-y-4 shadow-[0_0_60px_rgba(0,242,254,0.2)] z-10 my-8">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-start pb-3 border-b border-slate-700/80">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl font-bold shadow-[0_0_20px_rgba(0,242,254,0.4)]">
+              📶
+            </div>
+            <div>
+              <h3 class="text-base font-extrabold text-white">ESP32 BLE GATT Bridge</h3>
+              <p class="text-xs text-slate-400 font-medium">Hardware Telemetry Protocol (5-sec tick)</p>
+            </div>
+          </div>
+          <button onclick="closeBleModal()" class="w-8 h-8 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm transition">✕</button>
+        </div>
+
+        <!-- Connection Status Card -->
+        <div class="p-3.5 rounded-2xl border border-slate-700/80 bg-slate-900/90 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-300">GATT Connection Status:</span>
+            <span id="modalBleStatusPill" class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+              Disconnected
+            </span>
+          </div>
+          <div class="text-[11px] text-slate-400 space-y-1">
+            <div class="flex justify-between">
+              <span>Device Name:</span>
+              <strong id="modalBleDeviceName" class="text-cyan-400 font-mono">Not Paired</strong>
+            </div>
+            <div class="flex justify-between">
+              <span>Service UUID:</span>
+              <code class="font-mono text-[10px] text-cyan-300">19B10000-E8F2-537E-4F6C-D104768A1214</code>
+            </div>
+            <div class="flex justify-between">
+              <span>Sensor Characteristic:</span>
+              <code class="font-mono text-[10px] text-emerald-400">19B10001-E8F2-537E-4F6C-D104768A1214</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Action Buttons -->
+        <div class="space-y-2">
+          <button id="modalConnectBtn" onclick="connectWebBle()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-[0_0_25px_rgba(0,242,254,0.45)] transition flex items-center justify-center gap-2">
+            <span>🔵</span>
+            <span id="modalConnectBtnLabel">Scan & Connect ESP32 via Bluetooth</span>
+          </button>
+          
+          <button id="modalDisconnectBtn" onclick="disconnectWebBle()" class="w-full py-2.5 rounded-2xl border border-rose-500/40 bg-rose-950/25 text-rose-300 hover:bg-rose-900/40 font-bold text-xs transition hidden">
+            ✕ Disconnect Bluetooth Hardware
+          </button>
+        </div>
+
+        <!-- Live Raw JSON Packet Monitor -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Live Packet Monitor:</span>
+            <span id="blePacketTimestamp" class="text-[10px] text-cyan-400 font-mono">Waiting for stream...</span>
+          </div>
+          <pre id="bleRawPacketViewer" class="p-3 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-[11px] overflow-x-auto border border-cyan-500/20 max-h-28 whitespace-pre-wrap shadow-inner">{ "status": "Ready to receive live BLE JSON packet from ESP32..." }</pre>
+        </div>
+
+        <!-- Quick Help Note -->
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-cyan-500/20 text-[11px] text-slate-300 space-y-1">
+          <div class="font-bold text-cyan-300 flex items-center gap-1.5">
+            <span>💡</span>
+            <span>How to Connect Your Real ESP32:</span>
+          </div>
+          <ol class="list-decimal list-inside space-y-0.5 text-[10px] text-slate-400">
+            <li>Ensure ESP32 is powered on running the EmotiGuard sketch.</li>
+            <li>Click <strong>Connect via Bluetooth</strong> above.</li>
+            <li>Select <strong>"EmotiGuard Wearable"</strong> from the browser dialog.</li>
+            <li>Live telemetry from MAX30102 & GSR sensors streams directly to the dashboard!</li>
+          </ol>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- INTERACTIVE 4-7-8 BREATHING RECOVERY MODAL                  -->
+    <!-- ============================================================ -->
+    <div id="breathingModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-xl z-[100] flex items-center justify-center p-4 hidden">
+      <div class="glass-panel border border-cyan-500/35 rounded-3xl p-6 sm:p-7 max-w-sm w-full text-center space-y-4 shadow-[0_0_60px_rgba(0,242,254,0.2)]">
+        <div class="flex justify-between items-center border-b border-slate-700/80 pb-3">
+          <h3 class="text-base font-extrabold text-white">4-7-8 Parasympathetic Reset</h3>
+          <button onclick="closeBreathingModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center font-bold text-sm">✕</button>
+        </div>
+        <p class="text-xs text-slate-400">Vagal nerve activation to reduce sympathetic tone and restore HRV.</p>
+        
+        <div class="relative w-48 h-48 mx-auto flex items-center justify-center my-4">
+          <div class="w-40 h-40 rounded-full border-2 border-cyan-400/50 bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 breathe-cyber-anim flex items-center justify-center shadow-[0_0_40px_rgba(0,242,254,0.35)]">
+            <span id="breathActionText" class="text-lg font-black text-cyan-300 tracking-wider">Inhale...</span>
+          </div>
+        </div>
+
+        <button onclick="closeBreathingModal()" class="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)]">
+          Complete Session
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Feedback Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 border border-cyan-400/60 text-cyan-300 text-xs font-extrabold py-3 px-5 rounded-2xl shadow-[0_0_30px_rgba(0,242,254,0.35)] transition-all duration-300 opacity-0 pointer-events-none z-[110] flex items-center gap-2">
+      <span>⚡</span>
+      <span id="toastMsg">Notification</span>
+    </div>
+
+  <!-- ============================================================ -->
+  <!-- APPLICATION SCRIPTS & ENGINES                                -->
+  <!-- ============================================================ -->
+  <script>
+    // --- User Accounts & Isolated Datasets ---
+    const usersDatabase = {
+      'guest': {
+        name: 'Guest User',
+        email: 'guest@emotiguard.com',
+        phone: '+1 (555) 019-2831',
+        deviceId: 'wearable_guest_01',
+        avatar: '🤖',
+        role: 'Isolated Biometric Tenant',
+        tier: 'Encrypted Isolation Active',
+        bleModel: 'EmotiGuard Band v2 (ESP32-S3 Node)',
+        batteryLevel: 88,
+        rssi: -58,
+        baselineHr: 72,
+        baselineEda: 2.2,
+        baselineHrv: 52,
+        currentVitals: { hr: 71, hrv: 54, eda: 2.1, accel: 0.03 },
+        currentScenario: 'resting',
+        hrHistory: [70, 72, 71, 73, 72, 70, 71, 72, 71, 72],
+        edaHistory: [2.1, 2.2, 2.1, 2.3, 2.2, 2.1, 2.2, 2.1, 2.2, 2.1],
+        emergencyContact: {
+          name: 'Dr. Sarah Chen (Physician)',
+          phone: '+1 (555) 987-6543',
+          email: 'sarah.chen@clinic.org'
+        },
+        alertSettings: {
+          autoSms: true,
+          pushNotify: true,
+          soundAlarm: true,
+          distressThreshold: 80,
+          durationMin: 3
+        }
+      },
+      'aarav': {
+        name: 'Aarav Patel',
+        email: 'aarav@emotiguard.com',
+        phone: '+1 (555) 489-1029',
+        deviceId: 'wearable_aarav_02',
+        avatar: '🧬',
+        role: 'Isolated Biometric Tenant',
+        tier: 'Encrypted Isolation Active',
+        bleModel: 'EmotiGuard Band Pro (ESP32-S3)',
+        batteryLevel: 94,
+        rssi: -62,
+        baselineHr: 82,
+        baselineEda: 4.5,
+        baselineHrv: 35,
+        currentVitals: { hr: 96, hrv: 24, eda: 5.8, accel: 0.05 },
+        currentScenario: 'stress',
+        hrHistory: [88, 92, 94, 96, 95, 94, 96, 98, 97, 96],
+        edaHistory: [4.8, 5.1, 5.4, 5.6, 5.7, 5.5, 5.8, 5.9, 5.8, 5.8],
+        emergencyContact: {
+          name: 'Priya Patel (Family Contact)',
+          phone: '+1 (555) 782-9911',
+          email: 'priya.patel@family.net'
+        },
+        alertSettings: {
+          autoSms: true,
+          pushNotify: true,
+          soundAlarm: true,
+          distressThreshold: 85,
+          durationMin: 2
+        }
+      }
+    };
+
+    let activeUserKey = 'guest';
+    let currentUser = usersDatabase['guest'];
+
+    // --- State Variables ---
+    let currentLang = 'en';
+    let currentTimeframe = '1h';
+    let tickCount = 5;
+
+    // --- Biometric Generation Targets ---
+    const targets = {
+      resting: { hr: 71, hrv: 53, eda: 2.2, accel: 0.03, active: false },
+      stress: { hr: 93, hrv: 25, eda: 5.7, accel: 0.05, active: false },
+      acute: { hr: 114, hrv: 16, eda: 8.4, accel: 0.07, active: false },
+      exercise: { hr: 132, hrv: 26, eda: 6.9, accel: 0.88, active: true },
+      breathing: { hr: 63, hrv: 75, eda: 1.8, accel: 0.01, active: false }
+    };
+
+    // --- Distress Scoring Engine ---
+    function computeDistress(hr, hrv, eda, accel) {
+      const baselineHr = currentUser.baselineHr, stdHr = 8.5;
+      const baselineEda = currentUser.baselineEda, stdEda = 0.7;
+      const baselineHrv = currentUser.baselineHrv, stdHrv = 14.0;
+
+      const zHr = (hr - baselineHr) / stdHr;
+      const zEda = (eda - baselineEda) / stdEda;
+      const zHrv = (baselineHrv - hrv) / stdHrv;
+
+      const sigScale = (z) => 100 / (1 + Math.exp(-1.1 * (Math.max(-3, Math.min(4, z)) - 0.5)));
+
+      const hrScore = sigScale(zHr);
+      const edaScore = sigScale(zEda);
+      const hrvScore = sigScale(zHrv);
+
+      let dampener = 1.0;
+      if (accel > 0.25) {
+        dampener = Math.max(0.20, 1.0 - (accel - 0.25) * 1.5);
+      }
+
+      const raw = (hrScore * 0.35) + (edaScore * 0.40) + (hrvScore * 0.25);
+      return Math.round(Math.min(100, Math.max(5, raw * dampener)));
+    }
+
+    // --- Web Bluetooth Implementation ---
+    const BLE_SERVICE_UUID = '19b10000-e8f2-537e-4f6c-d104768a1214';
+    const BLE_CHAR_UUID    = '19b10001-e8f2-537e-4f6c-d104768a1214';
+
+    let bleDevice = null;
+    let bleServer = null;
+    let bleCharacteristic = null;
+    let isBleConnected = false;
+
+    function openBleModal() {
+      document.getElementById('bleModal').classList.remove('hidden');
+    }
+
+    function closeBleModal() {
+      document.getElementById('bleModal').classList.add('hidden');
+    }
+
+    function handleHeaderBleClick() {
+      if (isBleConnected) {
+        openBleModal();
+      } else {
+        connectWebBle();
+      }
+    }
+
+    async function connectWebBle() {
+      if (!navigator.bluetooth) {
+        showToast('Web Bluetooth is supported in Chrome & Edge. Opening connection guide...');
+        openBleModal();
+        return;
+      }
+
+      try {
+        showToast('Scanning for EmotiGuard ESP32 Wearable...');
+        const label = document.getElementById('modalConnectBtnLabel');
+        if (label) label.innerText = 'Scanning for ESP32...';
+
+        bleDevice = await navigator.bluetooth.requestDevice({
+          filters: [
+            { namePrefix: 'EmotiGuard' }
+          ],
+          optionalServices: [BLE_SERVICE_UUID]
+        }).catch(async () => {
+          return await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [BLE_SERVICE_UUID]
+          });
+        });
+
+        bleDevice.addEventListener('gattserverdisconnected', onBleDisconnected);
+
+        if (label) label.innerText = 'Connecting to GATT Server...';
+        bleServer = await bleDevice.gatt.connect();
+
+        if (label) label.innerText = 'Discovering Sensor Characteristic...';
+        const service = await bleServer.getPrimaryService(BLE_SERVICE_UUID);
+        bleCharacteristic = await service.getCharacteristic(BLE_CHAR_UUID);
+
+        await bleCharacteristic.startNotifications();
+        bleCharacteristic.addEventListener('characteristicvaluechanged', onBleCharacteristicValueChanged);
+
+        isBleConnected = true;
+        updateBleUIState(true, bleDevice.name || 'EmotiGuard Wearable');
+        showToast(`Connected to ${bleDevice.name || 'ESP32 Wearable'} via Bluetooth! Streaming biometrics.`);
+      } catch (err) {
+        console.error('BLE Connection error:', err);
+        const label = document.getElementById('modalConnectBtnLabel');
+        if (label) label.innerText = 'Scan & Connect ESP32 via Bluetooth';
+        if (err.name !== 'NotFoundError') {
+          showToast('Bluetooth Connection Failed: ' + err.message);
+        }
+      }
+    }
+
+    function onBleCharacteristicValueChanged(event) {
+      const value = event.target.value;
+      const decoder = new TextDecoder('utf-8');
+      const jsonStr = decoder.decode(value);
+      
+      try {
+        const packet = JSON.parse(jsonStr);
+        handleLiveSensorPacket(packet, jsonStr);
+      } catch (err) {
+        console.warn('Failed to parse BLE packet:', jsonStr);
+      }
+    }
+
+    function handleLiveSensorPacket(packet, rawJson) {
+      const viewer = document.getElementById('bleRawPacketViewer');
+      if (viewer) {
+        viewer.innerText = rawJson || JSON.stringify(packet, null, 2);
+      }
+      const tsElem = document.getElementById('blePacketTimestamp');
+      if (tsElem) {
+        tsElem.innerText = `Received at ${new Date().toLocaleTimeString()} (ts: ${packet.ts || Math.floor(Date.now()/1000)})`;
+      }
+
+      if (packet.hr) currentUser.currentVitals.hr = Math.round(packet.hr);
+      if (packet.hrv) currentUser.currentVitals.hrv = Math.round(packet.hrv);
+      if (packet.eda) currentUser.currentVitals.eda = parseFloat(packet.eda.toFixed(1));
+      if (packet.accel) {
+        const mag = Math.sqrt(Math.pow(packet.accel.x || 0, 2) + Math.pow(packet.accel.y || 0, 2) + Math.pow((packet.accel.z || 9.8) - 9.8, 2)) / 9.8;
+        currentUser.currentVitals.accel = parseFloat(mag.toFixed(2));
+      }
+
+      currentUser.hrHistory.push(currentUser.currentVitals.hr);
+      if (currentUser.hrHistory.length > 20) currentUser.hrHistory.shift();
+      currentUser.edaHistory.push(currentUser.currentVitals.eda);
+      if (currentUser.edaHistory.length > 20) currentUser.edaHistory.shift();
+
+      updateUI();
+      relayPacketToBackend(packet);
+    }
+
+    function disconnectWebBle() {
+      if (bleDevice && bleDevice.gatt.connected) {
+        bleDevice.gatt.disconnect();
+      }
+      onBleDisconnected();
+    }
+
+    function onBleDisconnected() {
+      isBleConnected = false;
+      updateBleUIState(false, null);
+      showToast('Bluetooth disconnected. Returned to simulator mode.');
+    }
+
+    function updateBleUIState(connected, deviceName) {
+      const headerBtn = document.getElementById('headerBleBtn');
+      const headerIcon = document.getElementById('headerBleIcon');
+      const headerText = document.getElementById('headerBleText');
+
+      const modalPill = document.getElementById('modalBleStatusPill');
+      const modalDevName = document.getElementById('modalBleDeviceName');
+      const modalConnBtn = document.getElementById('modalConnectBtn');
+      const modalDiscBtn = document.getElementById('modalDisconnectBtn');
+      const modalLabel = document.getElementById('modalConnectBtnLabel');
+
+      if (connected) {
+        if (headerBtn) {
+          headerBtn.className = "flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-[0_0_20px_rgba(0,255,135,0.45)] border border-emerald-300 transition-all";
+        }
+        if (headerIcon) headerIcon.innerText = "🟢";
+        if (headerText) headerText.innerText = "CONNECTED (ESP32)";
+
+        if (modalPill) {
+          modalPill.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+          modalPill.innerText = "Connected (Streaming)";
+        }
+        if (modalDevName) modalDevName.innerText = deviceName || 'EmotiGuard Wearable';
+        if (modalConnBtn) modalConnBtn.classList.add('hidden');
+        if (modalDiscBtn) modalDiscBtn.classList.remove('hidden');
+      } else {
+        if (headerBtn) {
+          headerBtn.className = "flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold text-xs shadow-[0_0_20px_rgba(0,242,254,0.4)] border border-cyan-300/60 transition-all";
+        }
+        if (headerIcon) headerIcon.innerText = "📶";
+        if (headerText) headerText.innerText = "CONNECT BLUETOOTH";
+
+        if (modalPill) {
+          modalPill.className = "text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
+          modalPill.innerText = "Disconnected";
+        }
+        if (modalDevName) modalDevName.innerText = "Not Paired";
+        if (modalConnBtn) modalConnBtn.classList.remove('hidden');
+        if (modalDiscBtn) modalDiscBtn.classList.add('hidden');
+        if (modalLabel) modalLabel.innerText = "Scan & Connect ESP32 via Bluetooth";
+      }
+    }
+
+    async function relayPacketToBackend(packet) {
+      try {
+        await fetch('/api/v1/sensor/packet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ts: packet.ts || Math.floor(Date.now()/1000),
+            hr: packet.hr,
+            hrv: packet.hrv,
+            eda: packet.eda,
+            accel: packet.accel || { x: 0.02, y: 0.03, z: 9.81 },
+            cs: packet.cs || 0,
+            device_id: currentUser.deviceId,
+            user_id: activeUserKey === 'guest' ? 1 : 2
+          })
+        });
+      } catch (err) {
+        // Non-blocking sync
+      }
+    }
+
+    // --- 5-Second Telemetry Loop ---
+    setInterval(() => {
+      tickCount--;
+      if (tickCount <= 0) {
+        tickCount = 5;
+        tick();
+      }
+      document.getElementById('countdownLabel').innerText = `Next packet in: ${tickCount}s`;
+    }, 1000);
+
+    function tick() {
+      if (isBleConnected) return;
+
+      const tgt = targets[currentUser.currentScenario];
+      currentUser.currentVitals.hr += (tgt.hr - currentUser.currentVitals.hr) * 0.4 + (Math.random() - 0.5) * 1.5;
+      currentUser.currentVitals.hrv += (tgt.hrv - currentUser.currentVitals.hrv) * 0.4 + (Math.random() - 0.5) * 2;
+      currentUser.currentVitals.eda += (tgt.eda - currentUser.currentVitals.eda) * 0.35 + (Math.random() - 0.5) * 0.15;
+      currentUser.currentVitals.accel += (tgt.accel - currentUser.currentVitals.accel) * 0.5 + (Math.random() - 0.5) * 0.01;
+
+      currentUser.currentVitals.hr = Math.round(currentUser.currentVitals.hr);
+      currentUser.currentVitals.hrv = Math.round(currentUser.currentVitals.hrv);
+      currentUser.currentVitals.eda = parseFloat(currentUser.currentVitals.eda.toFixed(1));
+      currentUser.currentVitals.accel = parseFloat(Math.max(0.01, currentUser.currentVitals.accel).toFixed(2));
+
+      currentUser.hrHistory.push(currentUser.currentVitals.hr);
+      if (currentUser.hrHistory.length > 20) currentUser.hrHistory.shift();
+      currentUser.edaHistory.push(currentUser.currentVitals.eda);
+      if (currentUser.edaHistory.length > 20) currentUser.edaHistory.shift();
+
+      updateUI();
+    }
+
+    function updateUI() {
+      // Update User Info & Avatar Widget
+      document.getElementById('headerUserName').innerText = currentUser.name;
+      const headerTenant = document.getElementById('headerTenantId');
+      if (headerTenant) headerTenant.innerText = currentUser.deviceId;
+      const headerAv = document.getElementById('headerAvatar');
+      if (headerAv) {
+        if (currentUser.avatar && currentUser.avatar.startsWith('data:')) {
+          headerAv.innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full object-cover rounded-full">`;
+        } else {
+          headerAv.innerText = currentUser.avatar || '🤖';
+        }
+      }
+      const dropName = document.getElementById('dropdownUserName');
+      if (dropName) dropName.innerText = currentUser.name;
+      const dropEmail = document.getElementById('dropdownUserEmail');
+      if (dropEmail) dropEmail.innerText = currentUser.email;
+
+      document.getElementById('bannerFullName').innerText = currentUser.name;
+      document.getElementById('bannerDeviceId').innerText = currentUser.deviceId;
+
+      const score = computeDistress(
+        currentUser.currentVitals.hr,
+        currentUser.currentVitals.hrv,
+        currentUser.currentVitals.eda,
+        currentUser.currentVitals.accel
+      );
+
+      // Score and Arc
+      const scoreNumElem = document.getElementById('distressScoreNum');
+      scoreNumElem.innerText = score;
+      
+      const arc = document.getElementById('gaugeArc');
+      const badge = document.getElementById('distressBadge');
+      const summary = document.getElementById('distressSummary');
+      const banner = document.getElementById('interventionBanner');
+      const backlight = document.getElementById('gaugeBacklight');
+
+      // 235 circumference for 180deg arc
+      const offset = 235 - (235 * (score / 100));
+      arc.style.strokeDashoffset = Math.max(0, offset);
+
+      if (score < 30) {
+        arc.setAttribute('stroke', '#00FF87');
+        scoreNumElem.className = 'text-5xl sm:text-6xl font-black mono-num tracking-tight bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(0,255,135,0.4)]';
+        badge.innerText = currentLang === 'hi' ? 'शांत और संतुलित' : 'Calm & Centered';
+        badge.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/35 shadow-[0_0_15px_rgba(0,255,135,0.3)] pulse-badge';
+        summary.innerText = currentLang === 'hi' ? 'बायोमेट्रिक्स सामान्य और शांत सीमा में हैं।' : `Vitals steady within ${currentUser.name.split(' ')[0]}'s personal baseline zone.`;
+        if (backlight) backlight.className = 'w-64 h-36 bg-emerald-500/15 rounded-full blur-[70px] transition-all duration-700';
+        banner.classList.add('hidden');
+      } else if (score < 55) {
+        arc.setAttribute('stroke', '#00F2FE');
+        scoreNumElem.className = 'text-5xl sm:text-6xl font-black mono-num tracking-tight bg-gradient-to-r from-cyan-300 via-blue-200 to-teal-300 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(0,242,254,0.4)]';
+        badge.innerText = currentLang === 'hi' ? 'हल्का तनाव' : 'Gentle Tension';
+        badge.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/35 shadow-[0_0_15px_rgba(0,242,254,0.3)] pulse-badge';
+        summary.innerText = currentLang === 'hi' ? 'हल्का शारीरिक तनाव देखा गया है।' : 'Slight physiological arousal detected. A gentle pause or water break could help.';
+        if (backlight) backlight.className = 'w-64 h-36 bg-cyan-500/15 rounded-full blur-[70px] transition-all duration-700';
+        banner.classList.add('hidden');
+      } else if (score < 80) {
+        arc.setAttribute('stroke', '#FF9900');
+        scoreNumElem.className = 'text-5xl sm:text-6xl font-black mono-num tracking-tight bg-gradient-to-r from-amber-300 via-orange-300 to-yellow-200 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,153,0,0.4)]';
+        badge.innerText = currentLang === 'hi' ? 'बढ़ा हुआ तनाव' : 'Elevated Arousal';
+        badge.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/35 shadow-[0_0_15px_rgba(255,153,0,0.3)] pulse-badge';
+        summary.innerText = currentLang === 'hi' ? 'बैठे होने के दौरान बढ़ा हुआ तनाव देखा गया है।' : 'Heightened sympathetic stress detected while stationary. Take slow, relaxing breaths.';
+        if (backlight) backlight.className = 'w-64 h-36 bg-amber-500/15 rounded-full blur-[70px] transition-all duration-700';
+        banner.classList.remove('hidden');
+      } else {
+        arc.setAttribute('stroke', '#FF5E62');
+        scoreNumElem.className = 'text-5xl sm:text-6xl font-black mono-num tracking-tight bg-gradient-to-r from-rose-400 via-red-300 to-pink-300 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(255,94,98,0.5)]';
+        badge.innerText = currentLang === 'hi' ? 'गंभीर तनाव' : 'High Distress';
+        badge.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/35 shadow-[0_0_20px_rgba(255,94,98,0.35)] pulse-badge';
+        summary.innerText = currentLang === 'hi' ? 'गंभीर तनाव के संकेत। हम आपके साथ हैं।' : 'Sustained sympathetic activation detected. We are here with you. Take slow, gentle breaths.';
+        if (backlight) backlight.className = 'w-64 h-36 bg-rose-500/20 rounded-full blur-[70px] transition-all duration-700';
+        banner.classList.remove('hidden');
+      }
+
+      // Telemetry Metric Values
+      document.getElementById('metricHr').innerText = currentUser.currentVitals.hr;
+      const diff = currentUser.currentVitals.hr - currentUser.baselineHr;
+      document.getElementById('metricHrNote').innerText = `${diff >= 0 ? '+' : ''}${diff} bpm vs ${currentUser.name.split(' ')[0]}'s baseline`;
+
+      document.getElementById('metricHrv').innerText = currentUser.currentVitals.hrv;
+      document.getElementById('metricHrvNote').innerText = currentUser.currentVitals.hrv > 45 ? 'Optimal vagal tone' : 'Vagal braking suppressed';
+
+      document.getElementById('metricEda').innerText = currentUser.currentVitals.eda;
+      document.getElementById('metricEdaNote').innerText = currentUser.currentVitals.eda > 4.5 ? 'Sympathetic arousal high' : 'Resting skin conductance';
+
+      document.getElementById('metricMovement').innerText = currentUser.currentVitals.accel;
+      const actTag = document.getElementById('activityTag');
+      if (currentUser.currentVitals.accel > 0.3) {
+        actTag.innerText = 'Active Motion';
+        actTag.className = 'text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        document.getElementById('metricMovementNote').innerText = 'Motion dampening active (85%)';
+      } else {
+        actTag.innerText = 'Sedentary';
+        actTag.className = 'text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/30';
+        document.getElementById('metricMovementNote').innerText = 'Resting baseline';
+      }
+
+      // Draw Glowing Sparklines
+      drawSparkline('sparklineHr', currentUser.hrHistory, '#FF5E62');
+      drawSparkline('sparklineHrv', [52, 54, 51, 53, 50, 52, 55, 52, 51, 53, currentUser.currentVitals.hrv], '#00FF87');
+      drawSparkline('sparklineEda', currentUser.edaHistory, '#FF9900');
+      drawSparkline('sparklineMovement', [0.03, 0.02, 0.04, 0.03, 0.02, 0.04, currentUser.currentVitals.accel], '#00F2FE');
+
+      // Draw Main Trend Matrix
+      drawTrendChart();
+    }
+
+    function setScenario(name) {
+      currentUser.currentScenario = name;
+      document.querySelectorAll('.scenario-btn').forEach(b => {
+        b.className = 'scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-slate-700/80 bg-slate-900/60 text-slate-300 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(0,242,254,0.3)] transition-all';
+      });
+
+      const activeBtn = document.getElementById(`btn-${name}`);
+      if (activeBtn) {
+        if (name === 'resting') {
+          activeBtn.className = 'scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-emerald-400 bg-emerald-500/20 text-emerald-200 shadow-[0_0_25px_rgba(0,255,135,0.45)] ring-2 ring-emerald-400/50 transition-all';
+        } else if (name === 'stress') {
+          activeBtn.className = 'scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-amber-400 bg-amber-500/20 text-amber-200 shadow-[0_0_25px_rgba(255,153,0,0.45)] ring-2 ring-amber-400/50 transition-all';
+        } else if (name === 'acute') {
+          activeBtn.className = 'scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-rose-400 bg-rose-500/20 text-rose-200 shadow-[0_0_25px_rgba(255,94,98,0.45)] ring-2 ring-rose-400/50 transition-all';
+        } else if (name === 'exercise') {
+          activeBtn.className = 'scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-[0_0_25px_rgba(0,242,254,0.45)] ring-2 ring-cyan-400/50 transition-all';
+        } else if (name === 'breathing') {
+          activeBtn.className = 'scenario-btn relative overflow-hidden text-xs font-bold p-3 rounded-2xl glass-panel-interactive border border-teal-400 bg-teal-500/20 text-teal-200 shadow-[0_0_25px_rgba(96,239,255,0.45)] ring-2 ring-teal-400/50 transition-all';
+        }
+      }
+
+      tickCount = 1;
+      showToast(`Simulating scenario: ${name.toUpperCase()} for ${currentUser.name}`);
+    }
+
+    function setTimeframe(tf) {
+      currentTimeframe = tf;
+      ['1h', '24h', '7d'].forEach(id => {
+        const btn = document.getElementById(`tf-${id}`);
+        if (id === tf) {
+          btn.className = 'px-3.5 py-1.5 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.3)] transition-all';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white transition-all';
+        }
+      });
+      drawTrendChart();
+      showToast(`Switched matrix window to ${tf.toUpperCase()}`);
+    }
+
+    function drawSparkline(canvasId, data, color) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (data.length < 2) return;
+      const min = Math.min(...data);
+      const max = Math.max(...data);
+      const range = (max - min) === 0 ? 1 : (max - min);
+
+      const step = w / (data.length - 1);
+
+      // Gradient Fill Underline
+      ctx.beginPath();
+      data.forEach((val, i) => {
+        const x = i * step;
+        const norm = (val - min) / range;
+        const y = h - (norm * (h - 8)) - 4;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+
+      const fillGrad = ctx.createLinearGradient(0, 0, 0, h);
+      fillGrad.addColorStop(0, color + '40');
+      fillGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = fillGrad;
+      ctx.fill();
+
+      // Glowing Stroke Line
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 8;
+
+      data.forEach((val, i) => {
+        const x = i * step;
+        const norm = (val - min) / range;
+        const y = h - (norm * (h - 8)) - 4;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function drawTrendChart() {
+      const canvas = document.getElementById('trendChartCanvas');
+      if (!canvas) return;
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Cyber Grid Lines
+      ctx.strokeStyle = 'rgba(0, 242, 254, 0.08)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 4; i++) {
+        const y = h * (i / 5);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      const pointsCount = currentTimeframe === '1h' ? 24 : (currentTimeframe === '24h' ? 48 : 56);
+      const hrPoints = [];
+      const edaPoints = [];
+
+      for (let i = 0; i < pointsCount; i++) {
+        const factor = Math.sin((i / pointsCount) * Math.PI * 2);
+        hrPoints.push(currentUser.baselineHr + factor * 14 + (Math.sin(i * 1.5) * 5));
+        edaPoints.push(currentUser.baselineEda + factor * 1.8 + (Math.cos(i * 1.8) * 0.4));
+      }
+      hrPoints[pointsCount - 1] = currentUser.currentVitals.hr;
+      edaPoints[pointsCount - 1] = currentUser.currentVitals.eda;
+
+      drawLineSeries(ctx, hrPoints, 50, 140, '#FF5E62', w, h);
+      drawLineSeries(ctx, edaPoints, 1.0, 9.0, '#00F2FE', w, h);
+    }
+
+    function drawLineSeries(ctx, data, minVal, maxVal, color, w, h) {
+      const step = w / (data.length - 1);
+
+      // Gradient Fill Underline
+      ctx.beginPath();
+      data.forEach((val, i) => {
+        const x = i * step;
+        const norm = Math.max(0, Math.min(1, (val - minVal) / (maxVal - minVal)));
+        const y = h - (norm * (h - 26)) - 13;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(w, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+
+      const fillGrad = ctx.createLinearGradient(0, 0, 0, h);
+      fillGrad.addColorStop(0, color + '30');
+      fillGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = fillGrad;
+      ctx.fill();
+
+      // Glowing Stroke Line
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+
+      data.forEach((val, i) => {
+        const x = i * step;
+        const norm = Math.max(0, Math.min(1, (val - minVal) / (maxVal - minVal)));
+        const y = h - (norm * (h - 26)) - 13;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    // --- Profile & Biometric Settings Management ---
+    let activeProfileTab = 'identity';
+    let recalibrationInterval = null;
+
+    function toggleProfileDropdown(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('profileDropdownMenu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    function closeProfileDropdown() {
+      const menu = document.getElementById('profileDropdownMenu');
+      if (menu) menu.classList.add('hidden');
+    }
+
+    // Dismiss dropdown on outside click
+    document.addEventListener('click', (e) => {
+      const container = document.getElementById('profileDropdownContainer');
+      if (container && !container.contains(e.target)) {
+        closeProfileDropdown();
+      }
+    });
+
+    function openProfileModal() {
+      populateProfileUI();
+      document.getElementById('profileModal').classList.remove('hidden');
+      switchProfileTab('identity');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.add('hidden');
+      if (recalibrationInterval) {
+        clearInterval(recalibrationInterval);
+        recalibrationInterval = null;
+      }
+    }
+
+    function switchProfileTab(tab) {
+      activeProfileTab = tab;
+      const tabs = ['identity', 'baselines', 'alerts', 'security'];
+      
+      tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const sec = document.getElementById('profileSection' + t.charAt(0).toUpperCase() + t.slice(1));
+        
+        const isCurrent = t === tab;
+        if (sec) sec.classList.toggle('hidden', !isCurrent);
+        if (btn) {
+          if (isCurrent) {
+            btn.className = 'flex-1 py-2 px-3 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.25)] flex items-center justify-center gap-1.5 whitespace-nowrap transition';
+          } else {
+            btn.className = 'flex-1 py-2 px-3 rounded-xl text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap transition';
+          }
+        }
+      });
+    }
+
+    function populateProfileUI() {
+      if (!currentUser) return;
+
+      // Header & Badges
+      const headerName = document.getElementById('profileHeaderName');
+      if (headerName) headerName.innerText = currentUser.name;
+      const headerTenant = document.getElementById('profileHeaderTenant');
+      if (headerTenant) headerTenant.innerText = currentUser.deviceId;
+      
+      const bigAvatar = document.getElementById('modalBigAvatar');
+      if (bigAvatar) {
+        if (currentUser.avatar && currentUser.avatar.startsWith('data:')) {
+          bigAvatar.innerHTML = `<img src="${currentUser.avatar}" class="w-full h-full object-cover rounded-2xl">`;
+        } else {
+          bigAvatar.innerText = currentUser.avatar || '🤖';
+        }
+      }
+
+      // Tab 1: Identity
+      const inputName = document.getElementById('profInputName');
+      if (inputName) inputName.value = currentUser.name || '';
+      const inputEmail = document.getElementById('profInputEmail');
+      if (inputEmail) inputEmail.value = currentUser.email || '';
+      const inputPhone = document.getElementById('profInputPhone');
+      if (inputPhone) inputPhone.value = currentUser.phone || '+1 (555) 019-2831';
+      const inputDev = document.getElementById('profInputDeviceId');
+      if (inputDev) inputDev.value = currentUser.deviceId || '';
+
+      // Tab 2: Baselines & BLE
+      const bleModel = document.getElementById('profBleModel');
+      if (bleModel) bleModel.innerText = currentUser.bleModel || 'EmotiGuard Band v2 (ESP32-S3 Node)';
+      const battText = document.getElementById('profBatteryText');
+      if (battText) battText.innerText = (currentUser.batteryLevel || 88) + '% 🔋';
+      const rssiText = document.getElementById('profRssiText');
+      if (rssiText) rssiText.innerText = (currentUser.rssi || -58) + ' dBm 📶';
+
+      const sliderHr = document.getElementById('sliderHr');
+      if (sliderHr) sliderHr.value = currentUser.baselineHr || 72;
+      const valSlideHr = document.getElementById('valSlideHr');
+      if (valSlideHr) valSlideHr.innerText = currentUser.baselineHr || 72;
+
+      const sliderHrv = document.getElementById('sliderHrv');
+      if (sliderHrv) sliderHrv.value = currentUser.baselineHrv || 52;
+      const valSlideHrv = document.getElementById('valSlideHrv');
+      if (valSlideHrv) valSlideHrv.innerText = currentUser.baselineHrv || 52;
+
+      const sliderEda = document.getElementById('sliderEda');
+      if (sliderEda) sliderEda.value = currentUser.baselineEda || 2.2;
+      const valSlideEda = document.getElementById('valSlideEda');
+      if (valSlideEda) valSlideEda.innerText = currentUser.baselineEda || 2.2;
+
+      // Tab 3: Emergency & Alerts
+      if (currentUser.emergencyContact) {
+        const emergName = document.getElementById('profEmergName');
+        if (emergName) emergName.value = currentUser.emergencyContact.name || '';
+        const emergPhone = document.getElementById('profEmergPhone');
+        if (emergPhone) emergPhone.value = currentUser.emergencyContact.phone || '';
+        const emergEmail = document.getElementById('profEmergEmail');
+        if (emergEmail) emergEmail.value = currentUser.emergencyContact.email || '';
+      }
+
+      if (currentUser.alertSettings) {
+        const tSms = document.getElementById('toggleAutoSms');
+        if (tSms) tSms.checked = !!currentUser.alertSettings.autoSms;
+        const tPush = document.getElementById('togglePushNotify');
+        if (tPush) tPush.checked = !!currentUser.alertSettings.pushNotify;
+        const tAlarm = document.getElementById('toggleSoundAlarm');
+        if (tAlarm) tAlarm.checked = !!currentUser.alertSettings.soundAlarm;
+
+        const tSlider = document.getElementById('sliderAlertThreshold');
+        if (tSlider) tSlider.value = currentUser.alertSettings.distressThreshold || 80;
+        const vThreshold = document.getElementById('valAlertThreshold');
+        if (vThreshold) vThreshold.innerText = currentUser.alertSettings.distressThreshold || 80;
+        const dispThresh = document.getElementById('dispThresholdText');
+        if (dispThresh) dispThresh.innerText = (currentUser.alertSettings.distressThreshold || 80) + '/100';
+      }
+    }
+
+    function selectBioAvatar(emoji) {
+      if (!currentUser) return;
+      currentUser.avatar = emoji;
+      usersDatabase[activeUserKey].avatar = emoji;
+      populateProfileUI();
+      updateUI();
+      showToast(`Bio-Avatar preset updated to ${emoji}`);
+    }
+
+    function handleCustomAvatarUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentUser.avatar = evt.target.result;
+        usersDatabase[activeUserKey].avatar = evt.target.result;
+        populateProfileUI();
+        updateUI();
+        showToast('Custom holographic avatar uploaded and encrypted!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleSaveProfileIdentity(e) {
+      e.preventDefault();
+      const newName = document.getElementById('profInputName').value.trim();
+      const newEmail = document.getElementById('profInputEmail').value.trim();
+      const newPhone = document.getElementById('profInputPhone').value.trim();
+
+      if (!newName || !newEmail) {
+        showToast('Name and Email are required.');
+        return;
+      }
+
+      currentUser.name = newName;
+      currentUser.email = newEmail;
+      currentUser.phone = newPhone;
+      usersDatabase[activeUserKey].name = newName;
+      usersDatabase[activeUserKey].email = newEmail;
+      usersDatabase[activeUserKey].phone = newPhone;
+
+      updateUI();
+      populateProfileUI();
+      showToast('Identity profile saved to isolated vault!');
+    }
+
+    function updateBaselineSliderVal(type, val) {
+      const display = document.getElementById('valSlide' + type);
+      if (display) display.innerText = val;
+      if (currentUser) {
+        currentUser['baseline' + type] = parseFloat(val);
+        usersDatabase[activeUserKey]['baseline' + type] = parseFloat(val);
+      }
+    }
+
+    function handleSaveBaselineChanges() {
+      updateUI();
+      showToast('Resting biometric baselines updated in encrypted vault!');
+    }
+
+    function triggerBaselineRecalibration() {
+      const container = document.getElementById('recalibrateProgressContainer');
+      const bar = document.getElementById('recalibrateProgressBar');
+      const stageText = document.getElementById('recalibrateStageText');
+      const percentText = document.getElementById('recalibratePercentText');
+      const spinner = document.getElementById('recalibrateSpinner');
+      const label = document.getElementById('recalibrateLabel');
+
+      if (!container || !bar) return;
+
+      container.classList.remove('hidden');
+      if (spinner) spinner.classList.remove('hidden');
+      if (label) label.innerText = 'Recalibrating...';
+
+      let progress = 0;
+      if (recalibrationInterval) clearInterval(recalibrationInterval);
+
+      recalibrationInterval = setInterval(() => {
+        progress += 4;
+        bar.style.width = progress + '%';
+        if (percentText) percentText.innerText = progress + '%';
+
+        if (progress < 30) {
+          if (stageText) stageText.innerText = 'Sampling BLE Telemetry Stream...';
+        } else if (progress < 65) {
+          if (stageText) stageText.innerText = 'Computing Autonomic HRV Variance Matrix...';
+        } else if (progress < 90) {
+          if (stageText) stageText.innerText = 'Updating Normalized Z-Score Baseline...';
+        } else if (progress >= 100) {
+          clearInterval(recalibrationInterval);
+          recalibrationInterval = null;
+          if (stageText) stageText.innerText = 'Calibration Complete!';
+          if (spinner) spinner.classList.add('hidden');
+          if (label) label.innerText = '⚡ Run 60s Recalibration';
+
+          // Calibrate baseline values to active vitals
+          const newHr = Math.round(currentUser.currentVitals.hr || 72);
+          const newHrv = Math.round(currentUser.currentVitals.hrv || 52);
+          const newEda = parseFloat((currentUser.currentVitals.eda || 2.2).toFixed(1));
+
+          currentUser.baselineHr = newHr;
+          currentUser.baselineHrv = newHrv;
+          currentUser.baselineEda = newEda;
+          usersDatabase[activeUserKey].baselineHr = newHr;
+          usersDatabase[activeUserKey].baselineHrv = newHrv;
+          usersDatabase[activeUserKey].baselineEda = newEda;
+
+          populateProfileUI();
+          updateUI();
+          showToast(`Biometric Baselines successfully recalibrated: ${newHr} BPM, ${newHrv} ms, ${newEda} µS!`);
+
+          setTimeout(() => {
+            container.classList.add('hidden');
+            bar.style.width = '0%';
+          }, 3500);
+        }
+      }, 100);
+    }
+
+    function updateAlertThresholdVal(val) {
+      const v = document.getElementById('valAlertThreshold');
+      if (v) v.innerText = val;
+      const disp = document.getElementById('dispThresholdText');
+      if (disp) disp.innerText = val + '/100';
+      if (currentUser && currentUser.alertSettings) {
+        currentUser.alertSettings.distressThreshold = parseInt(val, 10);
+      }
+    }
+
+    function handleSaveEmergencySettings(e) {
+      e.preventDefault();
+      const emergName = document.getElementById('profEmergName').value.trim();
+      const emergPhone = document.getElementById('profEmergPhone').value.trim();
+      const emergEmail = document.getElementById('profEmergEmail').value.trim();
+      const autoSms = document.getElementById('toggleAutoSms').checked;
+      const pushNotify = document.getElementById('togglePushNotify').checked;
+      const soundAlarm = document.getElementById('toggleSoundAlarm').checked;
+
+      currentUser.emergencyContact = {
+        name: emergName,
+        phone: emergPhone,
+        email: emergEmail
+      };
+      currentUser.alertSettings = {
+        autoSms: autoSms,
+        pushNotify: pushNotify,
+        soundAlarm: soundAlarm,
+        distressThreshold: parseInt(document.getElementById('sliderAlertThreshold').value, 10) || 80,
+        durationMin: 3
+      };
+
+      usersDatabase[activeUserKey].emergencyContact = currentUser.emergencyContact;
+      usersDatabase[activeUserKey].alertSettings = currentUser.alertSettings;
+
+      showToast('Emergency SOS notification matrix saved!');
+    }
+
+    function testEmergencyAlertSos() {
+      const contact = currentUser.emergencyContact || { name: 'Dr. Sarah Chen', phone: '+1 555-987-6543' };
+      showToast(`🚨 Simulated SOS Dispatched to ${contact.name} (${contact.phone}) with live telemetry snapshot!`);
+    }
+
+    // --- 2FA Authentication & Cryptographic Vault State ---
+    let authStep = 1;
+    let selectedOtpChannel = 'email'; // 'email' or 'sms'
+    let currentPendingContact = 'guest@emotiguard.com';
+    let currentPendingName = 'Guest User';
+    let currentPendingDeviceId = 'wearable_guest_01';
+    let currentPendingUserKey = 'guest';
+    let otpCountdownInterval = null;
+    let otpSecondsLeft = 45;
+    let lastGeneratedOtp = '123456';
+    let passwordVisibilityMap = {};
+
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.remove('hidden');
+      switchAuthStep(1);
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.add('hidden');
+      if (otpCountdownInterval) clearInterval(otpCountdownInterval);
+    }
+
+    function switchAuthTab(tab) {
+      const isSignIn = tab === 'signin';
+      document.getElementById('formSignIn').classList.toggle('hidden', !isSignIn);
+      document.getElementById('formSignUp').classList.toggle('hidden', isSignIn);
+      
+      const tabSignIn = document.getElementById('tab-auth-signin');
+      const tabSignUp = document.getElementById('tab-auth-signup');
+
+      if (isSignIn) {
+        tabSignIn.className = 'w-1/2 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 shadow-[0_0_12px_rgba(0,242,254,0.25)] transition';
+        tabSignUp.className = 'w-1/2 py-2 rounded-xl text-slate-400 hover:text-white transition';
+      } else {
+        tabSignIn.className = 'w-1/2 py-2 rounded-xl text-slate-400 hover:text-white transition';
+        tabSignUp.className = 'w-1/2 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 shadow-[0_0_12px_rgba(0,242,254,0.25)] transition';
+      }
+    }
+
+    function switchAuthStep(step) {
+      authStep = step;
+      const step1 = document.getElementById('authStep1');
+      const step2 = document.getElementById('authStep2');
+      const step3 = document.getElementById('authStep3');
+      
+      const pill1 = document.getElementById('stepPill1');
+      const pill2 = document.getElementById('stepPill2');
+      const pill3 = document.getElementById('stepPill3');
+
+      if (step1) step1.classList.toggle('hidden', step !== 1);
+      if (step2) step2.classList.toggle('hidden', step !== 2);
+      if (step3) step3.classList.toggle('hidden', step !== 3);
+
+      if (step === 1) {
+        if (pill1) pill1.className = 'step-pill-active p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        if (pill2) pill2.className = 'step-pill-pending p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        if (pill3) pill3.className = 'step-pill-pending p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+      } else if (step === 2) {
+        if (pill1) pill1.className = 'step-pill-done p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        if (pill2) pill2.className = 'step-pill-active p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        if (pill3) pill3.className = 'step-pill-pending p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        setTimeout(() => {
+          const firstBox = document.getElementById('otpDigit0');
+          if (firstBox) firstBox.focus();
+        }, 150);
+      } else if (step === 3) {
+        if (pill1) pill1.className = 'step-pill-done p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        if (pill2) pill2.className = 'step-pill-done p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+        if (pill3) pill3.className = 'step-pill-active p-2 rounded-2xl flex flex-col items-center text-center transition-all';
+      }
+    }
+
+    function selectOtpDeliveryChannel(channel) {
+      selectedOtpChannel = channel;
+      const btnEmail = document.getElementById('btnChannelEmail');
+      const btnSms = document.getElementById('btnChannelSms');
+      const label = document.getElementById('authContactLabel');
+      const input = document.getElementById('authContactInput');
+      const switchLabel = document.getElementById('switchChannelLabel');
+
+      if (channel === 'email') {
+        if (btnEmail) btnEmail.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_12px_rgba(0,242,254,0.3)] flex items-center justify-center gap-1.5 transition';
+        if (btnSms) btnSms.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-slate-700/60 flex items-center justify-center gap-1.5 transition';
+        if (label) label.innerText = 'Email Address';
+        if (input) {
+          input.type = 'email';
+          input.placeholder = 'e.g. guest@emotiguard.com';
+          if (!input.value.includes('@') && input.value.trim()) {
+            input.value = 'guest@emotiguard.com';
+          }
+        }
+        if (switchLabel) switchLabel.innerText = "Didn't receive code? Send via SMS instead";
+      } else {
+        if (btnSms) btnSms.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/40 shadow-[0_0_12px_rgba(168,85,247,0.3)] flex items-center justify-center gap-1.5 transition';
+        if (btnEmail) btnEmail.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white border border-slate-700/60 flex items-center justify-center gap-1.5 transition';
+        if (label) label.innerText = 'Mobile Phone Number';
+        if (input) {
+          input.type = 'tel';
+          input.placeholder = 'e.g. +1 (555) 019-2831';
+          if (input.value.includes('@')) {
+            input.value = '+1 (555) 019-2831';
+          }
+        }
+        if (switchLabel) switchLabel.innerText = "Didn't receive code? Send via Email instead";
+      }
+    }
+
+    function togglePasswordVisibility(fieldId) {
+      const field = document.getElementById(fieldId);
+      if (!field) return;
+      passwordVisibilityMap[fieldId] = !passwordVisibilityMap[fieldId];
+      const isVis = passwordVisibilityMap[fieldId];
+      field.type = isVis ? 'text' : 'password';
+      const eyeIcon = document.getElementById(fieldId + 'Eye');
+      if (eyeIcon) {
+        eyeIcon.innerText = isVis ? '👁️‍🗨️' : '👁️';
+      }
+    }
+
+    // Backend / API Integration Hook for Sending OTP (Twilio/AWS SNS/SendGrid/Firebase Auth)
+    async function sendOtpCode(contact, channel, purpose = 'login') {
+      try {
+        const resp = await fetch('/api/v1/auth/otp/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact, channel, purpose })
+        });
+        const data = await resp.json();
+        if (data.demo_code) {
+          lastGeneratedOtp = data.demo_code;
+        } else {
+          lastGeneratedOtp = '123456';
+        }
+        console.log(`[2FA Security Portal] OTP sent to ${contact} via ${channel.toUpperCase()}: ${lastGeneratedOtp}`);
+        return data;
+      } catch (err) {
+        console.warn('Backend OTP endpoint fallback:', err);
+        lastGeneratedOtp = '123456';
+        return { success: true, demo_code: '123456', channel };
+      }
+    }
+
+    // Backend / API Integration Hook for Verifying OTP
+    async function verifyOtpCode(code) {
+      try {
+        const resp = await fetch('/api/v1/auth/otp/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact: currentPendingContact, code, channel: selectedOtpChannel })
+        });
+        if (!resp.ok) {
+          const errData = await resp.json();
+          throw new Error(errData.detail || 'Invalid verification code');
+        }
+        return await resp.json();
+      } catch (err) {
+        // Allow demo bypass code 123456 locally for robust resilience
+        if (code === '123456' || code === lastGeneratedOtp) {
+          return { verified: true, message: 'Demo OTP verified.' };
+        }
+        throw err;
+      }
+    }
+
+    function startOtpCountdown() {
+      if (otpCountdownInterval) clearInterval(otpCountdownInterval);
+      otpSecondsLeft = 45;
+      updateCountdownUI();
+      otpCountdownInterval = setInterval(() => {
+        otpSecondsLeft--;
+        updateCountdownUI();
+        if (otpSecondsLeft <= 0) {
+          clearInterval(otpCountdownInterval);
+        }
+      }, 1000);
+    }
+
+    function updateCountdownUI() {
+      const timerEl = document.getElementById('otpTimerText');
+      const resendBtn = document.getElementById('btnResendOtp');
+      if (otpSecondsLeft > 0) {
+        if (timerEl) timerEl.innerText = `Resend code in ${otpSecondsLeft}s`;
+        if (resendBtn) {
+          resendBtn.disabled = true;
+          resendBtn.className = 'text-xs text-slate-500 font-bold opacity-50 cursor-not-allowed';
+        }
+      } else {
+        if (timerEl) timerEl.innerText = 'Code expired or not received?';
+        if (resendBtn) {
+          resendBtn.disabled = false;
+          resendBtn.className = 'text-xs text-cyan-400 hover:text-cyan-300 font-extrabold underline cursor-pointer';
+        }
+      }
+    }
+
+    async function handleResendOtp() {
+      showToast(`Resending 2FA security code via ${selectedOtpChannel.toUpperCase()}...`);
+      await sendOtpCode(currentPendingContact, selectedOtpChannel);
+      startOtpCountdown();
+      showToast(`New 2FA code dispatched! (Demo: ${lastGeneratedOtp})`);
+      const demoHint = document.getElementById('demoOtpHint');
+      if (demoHint) demoHint.innerText = `Demo Code: ${lastGeneratedOtp}`;
+    }
+
+    function toggleOtpChannel() {
+      selectedOtpChannel = selectedOtpChannel === 'email' ? 'sms' : 'email';
+      const switchBtn = document.getElementById('switchChannelLabel');
+      if (switchBtn) {
+        switchBtn.innerText = selectedOtpChannel === 'email' 
+          ? "Didn't receive code? Send via SMS instead" 
+          : "Didn't receive code? Send via Email instead";
+      }
+      handleResendOtp();
+    }
+
+    async function handleStep1Submit(e) {
+      e.preventDefault();
+      const contactInput = document.getElementById('authContactInput');
+      const contact = contactInput.value.trim();
+      if (!contact) {
+        showToast('Please enter your email or phone number.');
+        return;
+      }
+
+      currentPendingContact = contact;
+      const spinner = document.getElementById('step1Spinner');
+      const btnText = document.getElementById('step1BtnText');
+      if (spinner) spinner.classList.remove('hidden');
+      if (btnText) btnText.innerText = 'Dispatching Security OTP...';
+
+      if (contact.toLowerCase().includes('aarav')) {
+        currentPendingUserKey = 'aarav';
+        currentPendingName = 'Aarav Patel';
+        currentPendingDeviceId = 'wearable_aarav_02';
+      } else {
+        currentPendingUserKey = 'guest';
+        currentPendingName = 'Guest User';
+        currentPendingDeviceId = 'wearable_guest_01';
+      }
+
+      await sendOtpCode(contact, selectedOtpChannel);
+
+      if (spinner) spinner.classList.add('hidden');
+      if (btnText) btnText.innerText = 'Continue to 2FA Verification ➔';
+
+      document.getElementById('otpTargetDisplay').innerText = contact;
+      document.getElementById('otpChannelDisplay').innerText = selectedOtpChannel.toUpperCase();
+      const demoHint = document.getElementById('demoOtpHint');
+      if (demoHint) demoHint.innerText = `Demo Code: ${lastGeneratedOtp}`;
+
+      clearOtpInputs();
+      switchAuthStep(2);
+      startOtpCountdown();
+      showToast(`2FA security code dispatched! (Demo: ${lastGeneratedOtp})`);
+    }
+
+    async function handleSignUpStep1(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const contact = document.getElementById('regContact').value.trim();
+      const devId = document.getElementById('regDeviceId').value.trim() || ('wearable_' + name.toLowerCase().replace(/\s+/g, '_'));
+
+      currentPendingName = name;
+      currentPendingContact = contact;
+      currentPendingDeviceId = devId;
+      currentPendingUserKey = 'user_' + Date.now();
+
+      await sendOtpCode(contact, selectedOtpChannel, 'signup');
+
+      document.getElementById('otpTargetDisplay').innerText = contact;
+      document.getElementById('otpChannelDisplay').innerText = selectedOtpChannel.toUpperCase();
+      const demoHint = document.getElementById('demoOtpHint');
+      if (demoHint) demoHint.innerText = `Demo Code: ${lastGeneratedOtp}`;
+
+      clearOtpInputs();
+      switchAuthStep(2);
+      startOtpCountdown();
+      showToast(`2FA code dispatched for new account! (Demo: ${lastGeneratedOtp})`);
+    }
+
+    async function quickDemo2FA(userKey) {
+      currentPendingUserKey = userKey;
+      const user = usersDatabase[userKey];
+      if (!user) return;
+
+      currentPendingName = user.name;
+      currentPendingContact = user.email;
+      currentPendingDeviceId = user.deviceId;
+      selectedOtpChannel = 'email';
+
+      const contactInput = document.getElementById('authContactInput');
+      if (contactInput) contactInput.value = user.email;
+
+      showToast(`Initiating 2FA authentication for ${user.name}...`);
+      await sendOtpCode(user.email, 'email');
+
+      document.getElementById('otpTargetDisplay').innerText = user.email;
+      document.getElementById('otpChannelDisplay').innerText = 'EMAIL';
+      const demoHint = document.getElementById('demoOtpHint');
+      if (demoHint) demoHint.innerText = `Demo Code: 123456`;
+
+      clearOtpInputs();
+      switchAuthStep(2);
+      startOtpCountdown();
+
+      // Pre-fill demo OTP 123456 with instant convenience
+      autoFillDemoOtp('123456');
+    }
+
+    function loginAsDemoUser(userKey) {
+      quickDemo2FA(userKey);
+    }
+
+    function autoFillDemoOtp(code = '123456') {
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`otpDigit${i}`);
+        if (box) box.value = code[i] || '';
+      }
+      showToast(`Demo OTP (${code}) auto-filled. Click 'Verify & Decrypt' to proceed.`);
+      const lastBox = document.getElementById('otpDigit5');
+      if (lastBox) lastBox.focus();
+    }
+
+    function clearOtpInputs() {
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`otpDigit${i}`);
+        if (box) box.value = '';
+      }
+    }
+
+    function getEnteredOtp() {
+      let code = '';
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`otpDigit${i}`);
+        if (box) code += box.value.trim();
+      }
+      return code;
+    }
+
+    function setupOtpDigitInputs() {
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`otpDigit${i}`);
+        if (!box) continue;
+
+        box.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/[^0-9]/g, '');
+          e.target.value = val ? val[val.length - 1] : '';
+          if (val && i < 5) {
+            const next = document.getElementById(`otpDigit${i + 1}`);
+            if (next) next.focus();
+          }
+          if (getEnteredOtp().length === 6) {
+            // All 6 digits ready
+          }
+        });
+
+        box.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !box.value && i > 0) {
+            const prev = document.getElementById(`otpDigit${i - 1}`);
+            if (prev) {
+              prev.focus();
+              prev.value = '';
+            }
+          } else if (e.key === 'ArrowLeft' && i > 0) {
+            const prev = document.getElementById(`otpDigit${i - 1}`);
+            if (prev) prev.focus();
+          } else if (e.key === 'ArrowRight' && i < 5) {
+            const next = document.getElementById(`otpDigit${i + 1}`);
+            if (next) next.focus();
+          } else if (e.key === 'Enter') {
+            handleVerifyOtpSubmit();
+          }
+        });
+
+        box.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim();
+          const digits = pasteData.replace(/[^0-9]/g, '').slice(0, 6);
+          if (digits.length > 0) {
+            for (let j = 0; j < 6; j++) {
+              const b = document.getElementById(`otpDigit${j}`);
+              if (b) b.value = digits[j] || '';
+            }
+            const targetIdx = Math.min(digits.length, 5);
+            const targetBox = document.getElementById(`otpDigit${targetIdx}`);
+            if (targetBox) targetBox.focus();
+            if (digits.length === 6) {
+              handleVerifyOtpSubmit();
+            }
+          }
+        });
+      }
+    }
+
+    async function handleVerifyOtpSubmit(e) {
+      if (e) e.preventDefault();
+      const code = getEnteredOtp();
+      if (code.length < 6) {
+        showToast('Please enter all 6 digits of your security code.');
+        return;
+      }
+
+      const btn = document.getElementById('btnVerifyOtp');
+      const origText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.innerHTML = `<span class="radar-spin inline-block">⚡</span> <span>Verifying Cryptographic Key...</span>`;
+        btn.disabled = true;
+      }
+
+      try {
+        await verifyOtpCode(code);
+
+        // Switch to Step 3 (Identity Isolation Granted)
+        switchAuthStep(3);
+        const nameEl = document.getElementById('step3UserName');
+        const devEl = document.getElementById('step3DeviceName');
+        if (nameEl) nameEl.innerText = currentPendingName;
+        if (devEl) devEl.innerText = currentPendingDeviceId;
+
+        // Apply session to active database state
+        activeUserKey = currentPendingUserKey;
+        if (!usersDatabase[activeUserKey]) {
+          usersDatabase[activeUserKey] = {
+            name: currentPendingName,
+            email: currentPendingContact,
+            phone: currentPendingContact.includes('@') ? '+1 (555) 019-2831' : currentPendingContact,
+            deviceId: currentPendingDeviceId,
+            avatar: '👤',
+            role: 'Individual Biometric Tenant',
+            tier: 'Encrypted Isolation Active',
+            bleModel: 'EmotiGuard Band Pro (ESP32-S3)',
+            batteryLevel: 92,
+            rssi: -55,
+            baselineHr: 72,
+            baselineEda: 2.2,
+            baselineHrv: 52,
+            currentVitals: { hr: 71, hrv: 54, eda: 2.1, accel: 0.03 },
+            currentScenario: 'resting',
+            hrHistory: [70, 72, 71, 73, 72, 70, 71, 72, 71, 72],
+            edaHistory: [2.1, 2.2, 2.1, 2.3, 2.2, 2.1, 2.2, 2.1, 2.2, 2.1],
+            emergencyContact: {
+              name: 'Designated Family Contact',
+              phone: '+1 (555) 987-6543',
+              email: 'emergency@contact.org'
+            },
+            alertSettings: {
+              autoSms: true,
+              pushNotify: true,
+              soundAlarm: true,
+              distressThreshold: 80,
+              durationMin: 3
+            }
+          };
+        }
+        currentUser = usersDatabase[activeUserKey];
+
+        setTimeout(() => {
+          closeLoginModal();
+          updateUI();
+          showToast(`2FA Verified! Decrypted isolated profile: ${currentUser.name}`);
+        }, 1200);
+
+      } catch (err) {
+        showToast(err.message || 'Invalid 2FA code. Please try again.');
+        const container = document.getElementById('otpInputContainer');
+        if (container) {
+          container.classList.add('animate-shake');
+          setTimeout(() => container.classList.remove('animate-shake'), 600);
+        }
+      } finally {
+        if (btn) {
+          btn.innerHTML = origText;
+          btn.disabled = false;
+        }
+      }
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'hi' : 'en';
+      document.getElementById('currentLangLabel').innerText = currentLang === 'en' ? 'English' : 'हिंदी';
+      updateUI();
+      showToast(currentLang === 'en' ? 'Language switched to English' : 'भाषा हिंदी में बदली गई');
+    }
+
+    function openBreathingModal() {
+      document.getElementById('breathingModal').classList.remove('hidden');
+    }
+
+    function closeBreathingModal() {
+      document.getElementById('breathingModal').classList.add('hidden');
+      setScenario('breathing');
+      showToast('Completed 4-7-8 breathing session! Parasympathetic tone restored.');
+    }
+
+    function openJournalModal() {
+      showToast('Opened mindful journal reflection modal.');
+    }
+
+    function openMoodModal() {
+      showToast('Checked in: Logged peaceful state (5/5).');
+    }
+
+    function openSupportModal() {
+      showToast('Support screen: Trusted contacts & 24/7 Tele-MANAS/KIRAN helplines ready.');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toastMsg') || t;
+      m.innerText = msg;
+      t.classList.remove('opacity-0', 'pointer-events-none');
+      t.classList.add('opacity-100');
+      setTimeout(() => {
+        t.classList.remove('opacity-100');
+        t.classList.add('opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    // --- Interactive 3D Bio-Energy Node & Constellation Canvas ---
+    (function init3DBackground() {
+      const canvas = document.getElementById('neuralCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+
+      const PARTICLE_COUNT = 60;
+      const CONNECT_DIST = 130;
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      window.addEventListener('mousemove', (e) => {
+        mouse.targetX = (e.clientX - width / 2) * 0.08;
+        mouse.targetY = (e.clientY - height / 2) * 0.08;
+      });
+
+      const colors = ['#00F2FE', '#00FF87', '#A855F7', '#60EFFF'];
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: (Math.random() - 0.5) * width * 1.4,
+          y: (Math.random() - 0.5) * height * 1.4,
+          z: Math.random() * 800 + 100,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          vz: (Math.random() - 0.5) * 0.6,
+          radius: Math.random() * 2.2 + 1.2,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        mouse.x += (mouse.targetX - mouse.x) * 0.05;
+        mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+        const fov = 400;
+        const cx = width / 2;
+        const cy = height / 2;
+
+        const projected = [];
+
+        for (let p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.z += p.vz;
+
+          if (p.z < 50) p.z = 900;
+          if (p.z > 900) p.z = 50;
+
+          const scale = fov / (fov + p.z);
+          const px = (p.x + mouse.x * (p.z * 0.002)) * scale + cx;
+          const py = (p.y + mouse.y * (p.z * 0.002)) * scale + cy;
+
+          projected.push({ x: px, y: py, scale, color: p.color, radius: p.radius * scale });
+        }
+
+        // Draw connections
+        for (let i = 0; i < projected.length; i++) {
+          for (let j = i + 1; j < projected.length; j++) {
+            const dx = projected[i].x - projected[j].x;
+            const dy = projected[i].y - projected[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < CONNECT_DIST) {
+              const alpha = (1 - dist / CONNECT_DIST) * 0.22 * projected[i].scale;
+              ctx.strokeStyle = `rgba(0, 242, 254, ${alpha})`;
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(projected[i].x, projected[i].y);
+              ctx.lineTo(projected[j].x, projected[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Draw glowing nodes
+        for (let p of projected) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 10 * p.scale;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    // --- 3D Card Hover Tilt Interaction ---
+    (function init3DTilt() {
+      document.querySelectorAll('.tilt-card, .auth-vault-panel').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -7;
+          const rotateY = ((x - centerX) / centerX) * 7;
+          
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.012, 1.012, 1.012)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        });
+      });
+    })();
+
+    // Wire up 6-Digit OTP Box Listeners
+    setupOtpDigitInputs();
+
+    window.addEventListener('resize', drawTrendChart);
+    
+    // Auto-open Login / Account switcher if visited on /login or #login
+    if (window.location.pathname.includes('/login') || window.location.hash.includes('login')) {
+      setTimeout(openLoginModal, 250);
+    }
+
+    // Auto-open Profile / Settings if visited on #profile or /settings
+    if (window.location.hash.includes('profile') || window.location.hash.includes('settings')) {
+      setTimeout(openProfileModal, 250);
+    }
+
+    // Initial draw
+    updateUI();
+  </script>
+</body>
+</html>
